@@ -42,7 +42,7 @@ public class MainFrame extends JFrame {
 		int xpos, ypos;
 
 		// frame의 크기
-		setSize(800, 600);
+		setSize(1200, 800);
 		// User의 화면 크기를 얻는다.
 		dimScreen = Toolkit.getDefaultToolkit().getScreenSize();
 		// Frame의 크기를 얻는다.

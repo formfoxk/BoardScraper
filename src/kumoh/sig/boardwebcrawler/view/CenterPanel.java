@@ -5,14 +5,18 @@ package kumoh.sig.boardwebcrawler.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
@@ -102,23 +106,37 @@ public class CenterPanel extends JPanel implements
 		panelUrl.setBorder(borderPanelUrl);
 
 		JLabel lbUrl = new JLabel("URL");
-		tfUrl.setPreferredSize(new Dimension(400, 20));
+		tfUrl.setPreferredSize(new Dimension(600, 20));
 		
 		// Author panel 생성 및 설정
-		JPanel panelAuthor = new JPanel(new GridLayout(2,2));
+		JPanel panelAuthor = new JPanel(new BorderLayout());
 		// GridLayout Row1
 		JLabel lbName1 = new JLabel(" Developed by ");
 		JLabel lbName2 = new JLabel("JooHyun Yu");
 		lbName1.setFont(new Font("돋움", Font.BOLD, 10));
 		lbName2.setFont(new Font("돋움", Font.BOLD, 10));
 		lbName2.setForeground(Color.BLUE);
+		
+		JPanel panelName = new JPanel(new BorderLayout());
+		panelName.add(lbName1, "West");
+		panelName.add(lbName2, "Center");
 		// GridLayout Row2
 		JLabel lbGit = new JLabel(" Github ");
+		JLabel lbGitAddress = new JLabel("https://github.com/formfoxk/BoardWebCrawler");
 		lbGit.setFont(new Font("돋움", Font.BOLD, 10));
+		lbGitAddress.setFont(new Font("돋움", Font.BOLD, 10));
+		lbGitAddress.setForeground(Color.BLUE);
+		lbGitAddress.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		String gitAddress = "https://github.com/formfoxk/BoardWebCrawler";
+		hyperLink(lbGitAddress, gitAddress);
 		
-		panelAuthor.add(lbName1);
-		panelAuthor.add(lbName2);
-		panelAuthor.add(lbGit);
+		JPanel panelGit = new JPanel(new BorderLayout());
+		panelGit.add(lbGit, "West");
+		panelGit.add(lbGitAddress, "Center");
+		
+		panelAuthor.add(panelName, "North");
+		panelAuthor.add(panelGit, "Center");
+		
 		
 		// Url Panel에 추가
 		panelUrl.add(lbUrl);
@@ -184,7 +202,25 @@ public class CenterPanel extends JPanel implements
 /**************************************************************************************/
 /**										이벤트 처리		     				    	     **/
 /**************************************************************************************/
-	
+	/** 
+	* @Method Name	: hyperLink 
+	* @Method 설명    	: 하이퍼링크 Listener 설정 및 mouseClicked시 이벤트를 처리 해주는 함수 
+	* @변경이력      	:
+	* @param website 
+	*/
+	private void hyperLink(JLabel website, String address) {
+		website.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop()
+							.browse(new URI(address));
+				} catch (URISyntaxException | IOException ex) {
+					// It looks like there's a problem
+				}
+			}
+		});
+	}
 	/**
 	 *  
 	 * @Method Name : valueChanged 
