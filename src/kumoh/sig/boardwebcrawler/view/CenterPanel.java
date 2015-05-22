@@ -35,6 +35,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
+import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
 import org.jsoup.nodes.Element;
 
@@ -152,8 +153,9 @@ public class CenterPanel extends JPanel implements
 		// Tree Panel 설정 
 		JScrollPane jspTree = null;
 
+		UserMutableTreeNode rootNode = new UserMutableTreeNode("NULL","","","");
+		tree = new JTree(rootNode);
 		jspTree = new JScrollPane(tree);
-		tree = new JTree();
 		jspTree.setAutoscrolls(true);
 
 		// Search Panel 생성 및 설정
@@ -255,10 +257,10 @@ public class CenterPanel extends JPanel implements
 			// 컨트롤 클레스를 얻어 온다.
 			ScraperController sc = ScraperController.getInstance();
 			// Html문서를 얻어 온다.
-			Element doc = sc.getDocument(url);
+			Element document = sc.getDocument(url);
 
 			// Html 문서를 얻지 못한 경우
-			if (doc == null) {
+			if (document == null) {
 				// 오류 메시지 박스 출력
 				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
 						JOptionPane.ERROR_MESSAGE);
@@ -267,7 +269,8 @@ public class CenterPanel extends JPanel implements
 				tfUrl.setText("");
 			}
 			else {
-				System.out.println(doc);
+				// tree를 구축한다.
+				sc.buildTree(tree, document);				
 			}
 
 		}

@@ -1,6 +1,9 @@
 package kumoh.sig.boardwebcrawler.controller;
 
+import javax.swing.JTree;
+
 import kumoh.sig.boardwebcrawler.model.logic.HtmlDocumetParser;
+import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
 
 import org.jsoup.nodes.Element;
 
@@ -31,6 +34,19 @@ public class ScraperController {
 		
 		return hdp.getDocument(url);
 	}
+	
+	/** 
+	* @Method Name	: buildTree 
+	* @Method 설명    	: 트리를 구축하는 함수
+	* @변경이력      	:
+	* @param url 
+	*/
+	public void buildTree(JTree tree, Element document){
+		JTreeProcesser jp = new JTreeProcesser();
+		
+		jp.buildTree(tree, document);
+	}
+	
 	
 	/** 
 	* @Method Name	: getInstance 
