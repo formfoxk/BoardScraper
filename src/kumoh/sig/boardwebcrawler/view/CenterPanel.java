@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -32,6 +33,10 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+
+import kumoh.sig.boardwebcrawler.controller.ScraperController;
+
+import org.jsoup.nodes.Element;
 
 
 /** 
@@ -54,7 +59,7 @@ public class CenterPanel extends JPanel implements
 	
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfUrl;
-	private JButton btnUrl;
+	private JButton btnSearch;
 	private JTextField tfSearch;
 	private JButton btnFind;
 	private JSplitPane jSplitPane;
@@ -83,7 +88,7 @@ public class CenterPanel extends JPanel implements
 	private void creatingMemberInstance() {
 		tfUrl = new JTextField();
 		tfSearch = new JTextField();
-		btnUrl = new JButton("Search");
+		btnSearch = new JButton("Search");
 		btnFind = new JButton("Find");
 		panelSearchAndTree = new JPanel(new BorderLayout());
 		panelTable = new JPanel();
@@ -141,7 +146,7 @@ public class CenterPanel extends JPanel implements
 		// Url Panel에 추가
 		panelUrl.add(lbUrl);
 		panelUrl.add(tfUrl);
-		panelUrl.add(btnUrl);
+		panelUrl.add(btnSearch);
 		panelUrl.add(panelAuthor);
 		
 		// Tree Panel 설정 
@@ -185,7 +190,7 @@ public class CenterPanel extends JPanel implements
 		tree.addMouseListener(new TtreeMouseEventHandler());
 
 		// ActionListener 이벤트의 Listener 추가
-		btnUrl.addActionListener(this);
+		btnSearch.addActionListener(this);
 		btnFind.addActionListener(this);
 	}
 
@@ -240,11 +245,34 @@ public class CenterPanel extends JPanel implements
 	 * @param e
 	 *             
 	 */
+	@SuppressWarnings("unused")
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == btnUrl) {
-		
+		// Search 버튼을 클릭 한 경우
+		if (e.getSource() == btnSearch) {
+			String url = tfUrl.getText();
+
+			// 컨트롤 클레스를 얻어 온다.
+			ScraperController sc = ScraperController.getInstance();
+			// Html문서를 얻어 온다.
+			Element doc = sc.getDocument(url);
+
+			// Html 문서를 얻지 못한 경우
+			if (doc == null) {
+				// 오류 메시지 박스 출력
+				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
+						JOptionPane.ERROR_MESSAGE);
+
+				// 텍스트 필드 초기화
+				tfUrl.setText("");
+			}
+			else {
+				System.out.println(doc);
+			}
+
 		}
+		
+		// Find 버튼을 클릭 한 경우
 		if (e.getSource() == btnFind){
 			
 		}
