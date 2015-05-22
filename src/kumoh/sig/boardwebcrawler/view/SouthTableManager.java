@@ -15,7 +15,7 @@ import javax.swing.table.TableColumn;
 
 
 /** 
-* @FileName    	: CenterTableManager.java 
+* @FileName    	: SouthTableManager.java 
 * @Project    	: BoardWebCrawler 
 * @Date       	: 2015. 5. 23. 
 * @작성자     	: YuJoo 
@@ -23,7 +23,7 @@ import javax.swing.table.TableColumn;
 * @프로그램 기능 	: Table을 갱신(reloadTable)
 * @변경이력		:  
 */
-class CenterTableManager {
+class SouthTableManager {
 	/**
 	 *  
 	 * 
@@ -67,7 +67,7 @@ class CenterTableManager {
 	public void reloadTable(JTable table, Vector<Vector<Object>> data) {		
 		
 		// 테이블의 새로운 모델을 생성
-		CenterTableModel model = new CenterTableModel();
+		SouthTableModel model = new SouthTableModel();
 		
 		// 새로운 모델에 데이터를 추가
 		model.addTableData(data);
@@ -85,7 +85,7 @@ class CenterTableManager {
 	private void initColumnSizes(JTable table) {
 		
 		// TableModel 반환
-		CenterTableModel model = (CenterTableModel) table.getModel();
+		SouthTableModel model = (SouthTableModel) table.getModel();
 		
 		// TableCellRenderer 반환
 		TableCellRenderer headerRenderer = table.getTableHeader()
@@ -101,7 +101,7 @@ class CenterTableManager {
 		  HardCording 
 		 */
 		// longValues 설정
-		Object[] longValues = {"##", "###############", "###############", "###############"};
+		Object[] longValues = {new Boolean("false"), "###############", "###############"};
 		
 		// 열 사이즈
 		int columnSize = model.getColumnCount();
@@ -124,7 +124,7 @@ class CenterTableManager {
 	}
 	private void initCellRenderer(JTable table){
 		// TableModel 반환
-		CenterTableModel model = (CenterTableModel) table.getModel();
+		SouthTableModel model = (SouthTableModel) table.getModel();
 		
 		// 새로운 모델의 컬럼수를 취득
 		int columnSize = model.getColumnSize();
@@ -140,9 +140,9 @@ class CenterTableManager {
 					/**
 					  HardCording 
 					 */
-					if (i == 0) {
+					if (i == 2) {
 						tc.setCellRenderer(new TableHoriCenterAlignCellRenderer());
-					} else if (i == 1 || i == 2 || i == 3) {
+					} else if (i != 0) {
 						tc.setCellRenderer(new TableHoriLeftAlignCellRenderer());
 					}
 					tc.setHeaderRenderer(new TableHeaderCellRenderer());
