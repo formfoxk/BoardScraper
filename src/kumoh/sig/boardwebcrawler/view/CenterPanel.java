@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -33,6 +34,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeModel;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
@@ -65,6 +67,7 @@ public class CenterPanel extends JPanel implements
 	private JButton btnFind;
 	private JSplitPane jSplitPane;
 	private static JTree tree;
+	private JPanel panelUrl;
 	private JPanel panelSearchAndTree; 
 	private JPanel panelTable = null; 
 
@@ -91,6 +94,7 @@ public class CenterPanel extends JPanel implements
 		tfSearch = new JTextField();
 		btnSearch = new JButton("Search");
 		btnFind = new JButton("Find");
+		panelUrl = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		panelSearchAndTree = new JPanel(new BorderLayout());
 		panelTable = new JPanel();
 	}
@@ -104,7 +108,6 @@ public class CenterPanel extends JPanel implements
 		setLayout(new BorderLayout());
 
 		/** Url Panel 설정 */
-		JPanel panelUrl = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		// Center Panel 테두리
 		Border borderPanelUrl = BorderFactory.createTitledBorder(null,
 				"Scraper Url", TitledBorder.LEFT, TitledBorder.TOP, new Font(
@@ -238,7 +241,17 @@ public class CenterPanel extends JPanel implements
 	 */
 	@Override
 	public void valueChanged(TreeSelectionEvent e) {
+		// 현재 선택된 노드
+		UserMutableTreeNode node = (UserMutableTreeNode)e.getPath().getLastPathComponent();
 		
+		// root를 클릭한 경우
+		if(node.toString().equals("NULL"))
+			JOptionPane.showMessageDialog(null, "자식노드가 없습니다.", "알림",
+					JOptionPane.WARNING_MESSAGE);
+		else{
+			panelTable = new CenterTablePanel(node);
+			jSplitPane.setRightComponent(panelTable);
+		}
 	}
 	/**
 	 * @Method Name : actionPerformed 
@@ -270,7 +283,7 @@ public class CenterPanel extends JPanel implements
 			}
 			else {
 				// tree를 구축한다.
-				sc.buildTree(tree, document);				
+				sc.buildTree(tree, document);
 			}
 
 		}

@@ -6,9 +6,6 @@ package kumoh.sig.boardwebcrawler.view;
 import java.awt.GridLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JTree;
-
-import kumoh.sig.boardwebcrawler.main.MainFrame;
 
 /** 
  * @FileName		: ScraperMainPanel.java 

@@ -7,8 +7,6 @@ import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
 import org.jsoup.nodes.Element;
 
-import com.gargoylesoftware.htmlunit.WebConsole.Logger;
-
 /** 
 * @FileName    	: JTreeProcesser.java 
 * @Project    	: BoardWebCrawler 
@@ -63,8 +61,7 @@ public class JTreeProcesser {
 	 */
 	private void createTreeNode(UserMutableTreeNode parentNode, Element parentElement) {
 		// 자식노드가 존재 하지 않는 경우
-		if (parentElement.children().isEmpty())
-			return;
+		if (parentElement.children().isEmpty())	return;
 		
 		// 자식노드가 존재 할 경우
 		else {			
@@ -74,19 +71,19 @@ public class JTreeProcesser {
 				// 자식노드를 얻는다.
 				Element childElement = parentElement.child(i);	
 				
+				//자식노드의 자식노드가 존재 하지 않는  경우
+				if (childElement.children().isEmpty()) continue;
+				
 				// 자식 노드 생성
 				UserMutableTreeNode childNode = new UserMutableTreeNode(
 						childElement.tagName()
 						, childElement.text()
 						, childElement.cssSelector()
-						, childElement.baseUri());
-				
+						, childElement.attr("abs:href"));
+						
 				// 부모노드에 자식노드 추가
 				parentNode.add(childNode);
 				
-				//자식노드의 자식노드가 존재 하지 않는  경우
-				if (childElement.children().isEmpty()) continue;
-
 				// 재귀적으로 자식노드 생성
 				createTreeNode(childNode, childElement);
 			}
