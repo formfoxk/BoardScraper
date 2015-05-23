@@ -9,11 +9,12 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,7 +23,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import kumoh.sig.boardwebcrawler.controller.ScraperController;
 
 /**
  *  
@@ -37,10 +41,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class SouthPanel extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
-
-	// Debug용 변수
-	private boolean DEBUG = true;
-	private static final Logger logger = Logger.getLogger(SouthPanel.class.getName());
 
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfNameOfScraper;
@@ -211,9 +211,9 @@ public class SouthPanel extends JPanel implements ActionListener {
 		} else if (e.getSource() == btnDelete) {
 			executeBtnDelete();
 		} else if (e.getSource() == btnImport) {
-
+			executeBtnImport();
 		} else if (e.getSource() == btnExport) {
-
+			executeBtnExport();
 		} else if (e.getSource() == btnExecute) {
 			
 		}
@@ -235,7 +235,6 @@ public class SouthPanel extends JPanel implements ActionListener {
 		DefaultTableModel model = (DefaultTableModel) table.getModel();
 		model.addRow(data);
 	}
-	
 
 	/**
 	 *  
@@ -285,5 +284,95 @@ public class SouthPanel extends JPanel implements ActionListener {
 		}
 
 		return count;
+	}
+	
+	/** 
+	* @Method Name	: executeBtnImport 
+	* @Method 설명    	: scraper Table의 import를 처리하는 함수
+	* @변경이력      	: 
+	*/
+	private void executeBtnImport(){
+		
+				
+		JFileChooser fileChooser = new JFileChooser();
+        
+		// 모든 파일을 접근 하지 못하도록 설정
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+        //기본 Path의 경로 설정 (바탕화면)
+        fileChooser.setCurrentDirectory(new File(System.getProperty("user.home") + "//" + "Desktop"));    	
+        
+        //필터링될 확장자
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("xml 파일", "xml");
+         
+        //필터링될 확장자 추가
+        fileChooser.addChoosableFileFilter(filter);
+         
+        //파일오픈 다이얼로그 를 띄움
+        int result = fileChooser.showOpenDialog(this);
+         
+        if (result == JFileChooser.APPROVE_OPTION) {
+            //선택한 파일의 경로 반환
+            File selectedFile = fileChooser.getSelectedFile();
+             
+            String[] nameAndAuthor = new String[2];
+            
+            ScraperController sc = ScraperController.getInstance();
+			sc.importXmlFileOfScraperTable(selectedFile, table, nameAndAuthor);
+			
+			// 텍스트 필드 설정
+			tfNameOfScraper.setText(nameAndAuthor[0]);
+			tfAuthor.setText(nameAndAuthor[1]);
+        }
+	}
+	
+	/** 
+	* @Method Name	: executeBtnExport 
+	* @Method 설명    	: scraper Table의 Export를 처리하는 함수
+	* @변경이력      	: 
+	*/
+	private void executeBtnExport(){
+		// 파일명과 파일생성자명 
+		String tableName = tfNameOfScraper.getText();
+		String author = tfAuthor.getText();
+		
+		if(tableName.isEmpty() || author.isEmpty())
+			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author의 값이 입력 되지 않았습니다.", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+		else{
+		JFileChooser fileChooser = new JFileChooser();
+
+			// 모든 파일을 접근 하지 못하도록 설정
+			fileChooser.setAcceptAllFileFilterUsed(false);
+
+			// 기본 Path의 경로 설정 (바탕화면)
+			fileChooser.setCurrentDirectory(new File(System
+					.getProperty("user.home") + "//" + "Desktop"));
+
+			// 파일명 지정
+			fileChooser.setSelectedFile(new File(tableName + ".xml"));
+
+			// 필터링될 확장자
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					"xml 파일", "xml");
+
+			// 필터링될 확장자 추가
+			fileChooser.addChoosableFileFilter(filter);
+
+			// 파일오픈 다이얼로그 를 띄움
+			int result = fileChooser.showSaveDialog(this);
+
+			if (result == JFileChooser.APPROVE_OPTION) {
+				// 선택한 파일의 경로 반환
+				String savePath = fileChooser.getSelectedFile().toString();
+
+				ScraperController sc = ScraperController.getInstance();
+				sc.exportXmlFileOfScraperTable(savePath, table, tableName,
+						author);
+
+				JOptionPane.showMessageDialog(null, "경로(" + savePath
+						+ ")에 저장되었습니다.");
+			}
+		}
 	}
 }

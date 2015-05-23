@@ -17,10 +17,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -34,7 +32,6 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeModel;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
@@ -55,10 +52,6 @@ public class CenterPanel extends JPanel implements
 		TreeSelectionListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	
-	// Debug용 맴버 변수
-	private boolean DEBUG = true;
-	private static final Logger logger = Logger.getLogger(CenterPanel.class.getName());
 	
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfUrl;
@@ -260,7 +253,6 @@ public class CenterPanel extends JPanel implements
 	 * @param e
 	 *             
 	 */
-	@SuppressWarnings("unused")
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// Search 버튼을 클릭 한 경우

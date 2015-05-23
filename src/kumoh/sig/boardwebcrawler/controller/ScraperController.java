@@ -1,9 +1,13 @@
 package kumoh.sig.boardwebcrawler.controller;
 
+import java.io.File;
+
+import javax.swing.JTable;
 import javax.swing.JTree;
 
 import kumoh.sig.boardwebcrawler.model.logic.HtmlDocumetParser;
 import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
+import kumoh.sig.boardwebcrawler.model.logic.XmlFileProcessor;
 
 import org.jsoup.nodes.Element;
 
@@ -63,5 +67,32 @@ public class ScraperController {
 			}
 		}
 		return scInstance;
+	}
+	
+	/** 
+	* @Method Name	: importXmlFileOfScraperTable 
+	* @Method 설명    	: XmlFile을 읽어 ScraperTable에 내용을 채운다.
+	* @변경이력      	:
+	* @param file
+	* @param table
+	* @param nameAndAuthor 
+	*/
+	public void importXmlFileOfScraperTable(File file, JTable table, String[] nameAndAuthor){
+		XmlFileProcessor xfp = new XmlFileProcessor();
+		xfp.importXmlFileOfScraperTable(file, table, nameAndAuthor);
+	}
+	
+	/** 
+	* @Method Name	: exportXmlFileOfScraperTable 
+	* @Method 설명    	: ScraperTable의 내용을 XmlFile로 생성
+	* @변경이력      	:
+	* @param path
+	* @param table
+	* @param tableName
+	* @param author 
+	*/
+	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author){
+		XmlFileProcessor xfp = new XmlFileProcessor();
+		xfp.exportXmlFileOfScraperTable(path, table, tableName, author);
 	}
 }

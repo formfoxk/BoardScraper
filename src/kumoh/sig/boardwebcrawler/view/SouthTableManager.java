@@ -23,7 +23,7 @@ import javax.swing.table.TableColumn;
 * @프로그램 기능 	: Table을 갱신(reloadTable)
 * @변경이력		:  
 */
-class SouthTableManager {
+public class SouthTableManager {
 	/**
 	 *  
 	 * 
