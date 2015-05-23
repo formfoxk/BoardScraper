@@ -21,6 +21,7 @@ import java.net.URISyntaxException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -40,10 +41,6 @@ import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
 import org.jsoup.nodes.Element;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
 
 /** 
 * @FileName    	: CenterPanel.java 
@@ -58,6 +55,8 @@ public class CenterPanel extends JPanel implements
 		TreeSelectionListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
+	
+	private JFrame frame;
 	
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfUrl;
@@ -74,8 +73,9 @@ public class CenterPanel extends JPanel implements
 	private static JTree tree;
 	
 	// 생성자
-	public CenterPanel() {
-
+	public CenterPanel(JFrame frame) {
+		this.frame = frame;
+		
 		// 멤버들의 인스턴스 생성
 		creatingMemberInstance();
 		// 패널 설정
@@ -350,17 +350,25 @@ public class CenterPanel extends JPanel implements
 					// 현재 입력된 Url을 얻는다.
 					String url = tfUrl.getText();
 					
-					// a링크가 존재하는 경우
-					if(!href.isEmpty()){
-						JOptionPane.showMessageDialog(null, "Href 존재", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
+					// href 또는 OnClick함수가 존재하는 경우
+					if((!href.isEmpty())
+							|| (ScraperController.getInstance().isExistOnClick(url, cssSelector))){
+						
+						SelectToParsingDialog dialog = new SelectToParsingDialog(frame);
+						dialog.display();
+						
+						// dialog의 Ok버튼이 클릭된 경우
+						if(dialog.getIsCheckBtnOk()){
+							// 형제 노드 생성가 TRUE인 경우
+							if(dialog.getIsCheckSibling()){
+								System.out.println("형제노드 트루");
+							}
+							else{
+								System.out.println("형제노드 false");
+							}
+						}
 					}
-					// OnClick함수가 존재하는 경우
-					else if(ScraperController.getInstance().isExistOnClick(url, cssSelector)){
-						JOptionPane.showMessageDialog(null, "OnClick함수 존재", "ERROR",
-								JOptionPane.ERROR_MESSAGE);
-					}
-					// a링크가 존재하거나 OnClick함수가 존재하지 않는 경우
+					// href 또는 OnClick함수가 존재하지 않는 경우
 					else{
 						// 오류 메시지 박스 출력
 						JOptionPane.showMessageDialog(null, "우클릭된 노드는 문서를 파싱 할 수 없습니다.", "ERROR",

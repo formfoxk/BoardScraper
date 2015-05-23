@@ -33,7 +33,7 @@ public class MainFrame extends JFrame {
 	}
 	private void creatingMemberInstance(){		
 		cardLayout = new CardLayout();
-		scraperMainPanel = new MainPanel();
+		scraperMainPanel = new MainPanel(this);
 	}
 	
 	private void initialize() {

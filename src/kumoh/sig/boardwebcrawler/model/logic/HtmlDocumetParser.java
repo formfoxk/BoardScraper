@@ -175,6 +175,13 @@ public class HtmlDocumetParser {
 		return element;
 	}
 	
+	/** 
+	* @Method Name	: getPage 
+	* @Method 설명    	: url을 통해 HTML Page를 얻는 함수
+	* @변경이력      	:
+	* @param url
+	* @return 
+	*/
 	private HtmlPage getPage(String url){
 		// WebClient를 얻는다.
 		WebClient webClient = new WebClient(BrowserVersion.CHROME);

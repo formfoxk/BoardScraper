@@ -5,6 +5,7 @@ package kumoh.sig.boardwebcrawler.view;
 
 import java.awt.GridLayout;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /** 
@@ -23,11 +24,11 @@ public class MainPanel extends JPanel{
 	private CenterPanel panelCenter;
 	private SouthPanel panelSouth;
 	
-	public MainPanel(){
+	public MainPanel(JFrame frame){
 		setLayout(new GridLayout(2,0));
 		
 		
-		panelCenter = new CenterPanel();
+		panelCenter = new CenterPanel(frame);
 		panelSouth = new SouthPanel();
 		
 		add(panelCenter);

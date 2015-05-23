@@ -52,16 +52,14 @@ public class JTreeProcesser {
 			treeModel.reload();
 		}
 	}
-	/**
-	 *  
-	 * 
-	 * @Method Name : createTreeNode 
-	 * @Method 기능 : 트리노드를 생성하는 함수 재귀적으로 자식노드를 생성한다.
-	 * @변경이력 : 
-	 * @param e
-	 * @param parentNode
-	 *             
-	 */
+
+	/** 
+	* @Method Name	: createTreeNode 
+	* @Method 설명    	: 트리노드를 생성하는 함수 재귀적으로 자식노드를 생성한다.
+	* @변경이력      	:
+	* @param parentNode
+	* @param parentElement 
+	*/
 	private void createTreeNode(UserMutableTreeNode parentNode, Element parentElement) {
 		// 자식노드가 존재 하지 않는 경우
 		if (parentElement.children().isEmpty())	return;
