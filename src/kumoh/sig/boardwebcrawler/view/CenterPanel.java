@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -55,15 +56,18 @@ public class CenterPanel extends JPanel implements
 	
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfUrl;
-	private JButton btnSearch;
+	private JButton btnUrl;
 	private JTextField tfSearch;
-	private JButton btnFind;
+	private JButton btnSearch;
+	private JComboBox cbSearch;
 	private JSplitPane jSplitPane;
-	private static JTree tree;
 	private JPanel panelUrl;
 	private JPanel panelSearchAndTree; 
 	private JPanel panelTable = null; 
-
+	
+	// 트리
+	private static JTree tree;
+	
 	// 생성자
 	public CenterPanel() {
 
@@ -85,8 +89,10 @@ public class CenterPanel extends JPanel implements
 	private void creatingMemberInstance() {
 		tfUrl = new JTextField();
 		tfSearch = new JTextField();
+		btnUrl = new JButton("Start");
 		btnSearch = new JButton("Search");
-		btnFind = new JButton("Find");
+		String[] cbStr = {"Tag", "Content", "CssSelector", "Href"};
+		cbSearch = new JComboBox(cbStr);
 		panelUrl = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		panelSearchAndTree = new JPanel(new BorderLayout());
 		panelTable = new JPanel();
@@ -138,12 +144,11 @@ public class CenterPanel extends JPanel implements
 		
 		panelAuthor.add(panelName, "North");
 		panelAuthor.add(panelGit, "Center");
-		
-		
+			
 		// Url Panel에 추가
 		panelUrl.add(lbUrl);
 		panelUrl.add(tfUrl);
-		panelUrl.add(btnSearch);
+		panelUrl.add(btnUrl);
 		panelUrl.add(panelAuthor);
 		
 		// Tree Panel 설정 
@@ -156,10 +161,11 @@ public class CenterPanel extends JPanel implements
 
 		// Search Panel 생성 및 설정
 		JPanel panelSearch = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		tfSearch.setPreferredSize(new Dimension(200, 20));
-		btnFind.setPreferredSize(new Dimension(60,20));
+		tfSearch.setPreferredSize(new Dimension(250, 20));
+		btnSearch.setPreferredSize(new Dimension(80,20));
+		panelSearch.add(cbSearch);
 		panelSearch.add(tfSearch);
-		panelSearch.add(btnFind);
+		panelSearch.add(btnSearch);
 		
 		// Search+Tree Panel 설정
 		panelSearchAndTree.add("North", panelSearch);
@@ -188,8 +194,8 @@ public class CenterPanel extends JPanel implements
 		tree.addMouseListener(new TtreeMouseEventHandler());
 
 		// ActionListener 이벤트의 Listener 추가
+		btnUrl.addActionListener(this);
 		btnSearch.addActionListener(this);
-		btnFind.addActionListener(this);
 	}
 
 	/** 
@@ -256,7 +262,7 @@ public class CenterPanel extends JPanel implements
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// Search 버튼을 클릭 한 경우
-		if (e.getSource() == btnSearch) {
+		if (e.getSource() == btnUrl) {
 			String url = tfUrl.getText();
 
 			// 컨트롤 클레스를 얻어 온다.
@@ -277,12 +283,21 @@ public class CenterPanel extends JPanel implements
 				// tree를 구축한다.
 				sc.buildTree(tree, document);
 			}
-
 		}
 		
 		// Find 버튼을 클릭 한 경우
-		if (e.getSource() == btnFind){
-			
+		if (e.getSource() == btnSearch){
+			String searchStr = tfSearch.getText();
+			if(searchStr.isEmpty()){
+				// 오류 메시지 박스 출력
+				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
+						JOptionPane.ERROR_MESSAGE);
+			}
+				
+			else{
+				ScraperController sc = ScraperController.getInstance();
+				sc.searchTreeNode(tree, searchStr, cbSearch.getSelectedItem().toString());
+			}
 		}
 	}
 

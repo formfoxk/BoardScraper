@@ -1,7 +1,10 @@
 package kumoh.sig.boardwebcrawler.model.logic;
 
+import java.util.Enumeration;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
@@ -88,5 +91,59 @@ public class JTreeProcesser {
 				createTreeNode(childNode, childElement);
 			}
 		}
+	}
+	
+	/** 
+	* @Method Name	: searchTreeNode 
+	* @Method 설명    	: 검색 텍스트 필드에 입력된 값과 일치하는 노드들을 확장시켜주는 함수
+	* @변경이력      	:
+	* @param tree
+	* @param query
+	* @param cbItem 
+	*/
+	public void searchTreeNode(JTree tree, String query, String cbItem){
+		// Tree의 최상위 노드를 구한다.
+		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+		UserMutableTreeNode root = (UserMutableTreeNode)model.getRoot();
+		
+		// 전위 순회
+		Enumeration e = root.depthFirstEnumeration();
+
+		while (e.hasMoreElements()) {
+			// 현재 트리 노드
+			UserMutableTreeNode currNode = null;
+			currNode = (UserMutableTreeNode) e.nextElement();
+			
+			// 비교할 문자를 얻는다.
+			String cmpStr = null;
+			switch (cbItem) {
+			case "Tag":
+				cmpStr = currNode.getTagName();
+				break;
+
+			case "Content":
+				cmpStr = currNode.getContent();
+
+				break;
+
+			case "CssSelector":
+				cmpStr = currNode.getCssSelector();
+				break;
+
+			case "Href":
+				cmpStr = currNode.getHref();
+				break;
+			}
+			
+			// 문자열에 검색하고자 하는 문자가 포함되어 있는 경우
+			if(cmpStr.contains(query)){
+				// 현재 노드의 path를 구한다.
+				TreePath currPath = new TreePath(currNode.getPath());
+				
+				// 현재노드까지 펼친다.
+				tree.expandPath(currPath);
+			}
+		}
+		
 	}
 }

@@ -51,22 +51,17 @@ public class ScraperController {
 		jp.buildTree(tree, document);
 	}
 	
-	
 	/** 
-	* @Method Name	: getInstance 
-	* @Method 설명    	: 동기화 + 원자성을 보장하는 getInstance 함수
-	* @변경이력      	:
-	* @return 
+	* @Method Name	: searchTreeNode 
+	* @Method 설명    	: 검색 텍스트 필드에 입력된 값과 일치하는 노드들을 확장시켜주는 함수
+	* @변경이력      	: 
+	* @param tree
+	* @param query
+	* @param cbItem 
 	*/
-	public static ScraperController getInstance() {
-		if (scInstance == null) {
-			synchronized (HtmlDocumetParser.class) {
-				if (scInstance == null) {
-					scInstance = new ScraperController();
-				}
-			}
-		}
-		return scInstance;
+	public void searchTreeNode(JTree tree, String query, String cbItem){
+		JTreeProcesser jp = new JTreeProcesser();
+		jp.searchTreeNode(tree, query, cbItem);
 	}
 	
 	/** 
@@ -94,5 +89,22 @@ public class ScraperController {
 	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author){
 		XmlFileProcessor xfp = new XmlFileProcessor();
 		xfp.exportXmlFileOfScraperTable(path, table, tableName, author);
+	}
+	
+	/** 
+	* @Method Name	: getInstance 
+	* @Method 설명    	: 동기화 + 원자성을 보장하는 getInstance 함수
+	* @변경이력      	:
+	* @return 
+	*/
+	public static ScraperController getInstance() {
+		if (scInstance == null) {
+			synchronized (HtmlDocumetParser.class) {
+				if (scInstance == null) {
+					scInstance = new ScraperController();
+				}
+			}
+		}
+		return scInstance;
 	}
 }
