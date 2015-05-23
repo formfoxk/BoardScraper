@@ -18,7 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /** 
-* @FileName    	: IsSelectToParsingDialog.java 
+* @FileName    	: SelectToParsingDialog.java 
 * @Project    	: BoardWebCrawler 
 * @Date       	: 2015. 5. 23. 
 * @작성자     	: YuJoo 

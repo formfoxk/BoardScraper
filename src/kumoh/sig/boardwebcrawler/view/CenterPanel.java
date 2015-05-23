@@ -350,10 +350,10 @@ public class CenterPanel extends JPanel implements
 					// 현재 입력된 Url을 얻는다.
 					String url = tfUrl.getText();
 					
+					boolean isExistHref = (!href.isEmpty());
+					ScraperController sc = ScraperController.getInstance();
 					// href 또는 OnClick함수가 존재하는 경우
-					if((!href.isEmpty())
-							|| (ScraperController.getInstance().isExistOnClick(url, cssSelector))){
-						
+					if(isExistHref || sc.isExistOnClick(url, cssSelector)){
 						SelectToParsingDialog dialog = new SelectToParsingDialog(frame);
 						dialog.display();
 						
@@ -364,7 +364,8 @@ public class CenterPanel extends JPanel implements
 								System.out.println("형제노드 트루");
 							}
 							else{
-								System.out.println("형제노드 false");
+								// 하나의 URL을 파싱하여 Tree를 재구성한다.
+								singleNewBuildTree(isExistHref, currNode);
 							}
 						}
 					}
@@ -378,6 +379,51 @@ public class CenterPanel extends JPanel implements
 				}
 			}
 		}
+	}
+	
+	/** 
+	* @Method Name	: singleNewBuildTree 
+	* @Method 설명    	: 하나의 URL을 파싱하여 Tree를 재구성한다.
+	* @변경이력      	:
+	* @param isExistHref 
+	*/
+	private void singleNewBuildTree(boolean isExistHref, UserMutableTreeNode node){
+		ScraperController sc = ScraperController.getInstance();
+		
+		String url = null;
+		// Href가  존재하는 경우
+		if(isExistHref){
+			// url을 얻는다.
+			url = node.getHref();
+		}
+		// OnClick함수가 존재하는 경우
+		else{
+			// 현재 웹문서의 URL을 얻는다.
+			String currUrl = tfUrl.getText();
+			
+			// CssSelector를 얻는다.
+			String cssSelector = node.getCssSelector();
+			
+			// URL을 얻는다.
+			url = sc.getUrl(currUrl, cssSelector);
+		}
+		// document를 얻는다.
+		Element document = sc.getDocument(url);
+		
+		// URL 텍스트 필드를 재구성한다.
+		tfUrl.setText(url);
+		
+		// 트리를 재구성한다.
+		sc.buildTree(tree, document);
+	}
+	/** 
+	* @Method Name	: multiParsing 
+	* @Method 설명    	: 
+	* @변경이력      	:
+	* @param isExistHref 
+	*/
+	private void multiNewBuildTree(boolean isExistHref){
+		
 	}
 	
 	public static JTree getTree(){
