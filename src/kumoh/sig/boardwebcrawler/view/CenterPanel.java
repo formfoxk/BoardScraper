@@ -33,11 +33,16 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.TreePath;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
 import org.jsoup.nodes.Element;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 
 /** 
@@ -326,7 +331,43 @@ public class CenterPanel extends JPanel implements
 		public void mouseClicked(MouseEvent e) {
 			// TODO Auto-generated method stub
 			if (SwingUtilities.isRightMouseButton(e)) {
+				// 좌표값을 얻는다.
+				int x = e.getX();
+				int y = e.getY();
+				
+				// 우클릭된 노드의 TreePath를 구한다.
+				TreePath path = tree.getPathForLocation(x, y);
+				// path가 존재 하는 경우
+				if (path != null) {
+					// 클릭된 현재 노드를 구한다.
+					UserMutableTreeNode currNode = (UserMutableTreeNode) path
+							.getLastPathComponent();
+					
+					// 현재 노드의 href와 cssSelector를 얻는다.
+					String href = currNode.getHref();
+					String cssSelector = currNode.getCssSelector();
+					
+					// 현재 입력된 Url을 얻는다.
+					String url = tfUrl.getText();
+					
+					// a링크가 존재하는 경우
+					if(!href.isEmpty()){
+						JOptionPane.showMessageDialog(null, "Href 존재", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					// OnClick함수가 존재하는 경우
+					else if(ScraperController.getInstance().isExistOnClick(url, cssSelector)){
+						JOptionPane.showMessageDialog(null, "OnClick함수 존재", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+					}
+					// a링크가 존재하거나 OnClick함수가 존재하지 않는 경우
+					else{
+						// 오류 메시지 박스 출력
+						JOptionPane.showMessageDialog(null, "우클릭된 노드는 문서를 파싱 할 수 없습니다.", "ERROR",
+								JOptionPane.ERROR_MESSAGE);
+					}
 
+				}
 			}
 		}
 	}

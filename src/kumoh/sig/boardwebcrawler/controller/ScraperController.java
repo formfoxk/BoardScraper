@@ -1,6 +1,7 @@
 package kumoh.sig.boardwebcrawler.controller;
 
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.JTree;
@@ -10,6 +11,8 @@ import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
 import kumoh.sig.boardwebcrawler.model.logic.XmlFileProcessor;
 
 import org.jsoup.nodes.Element;
+
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 /** 
 * @FileName    	: ScraperController.java 
@@ -37,6 +40,48 @@ public class ScraperController {
 		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
 		
 		return hdp.getDocument(url);
+	}
+	
+	/**
+	* @Method Name	: isExist 
+	* @Method 설명    	: OnClick함수가 존재 유무의 값을 반환 하는 함수
+	* @변경이력      	:
+	* @param url
+	* @param cssSelector
+	* @return 
+	*/
+	public boolean isExistOnClick(String url, String cssSelector){
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.isExistOnClick(url, cssSelector);
+	}
+
+/** 
+	* @Method Name	: getUrl 
+	* @Method 설명    	: 단일 Url을 얻는 함수
+	* @변경이력      	:
+	* @param url
+	* @param cssSelector
+	* @return 
+	*/
+	public String getUrl(String url, String cssSelector){
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.getUrl(url, cssSelector);
+	}
+
+/** 
+	* @Method Name	: getUrls 
+	* @Method 설명    	: cssSelector들과 일치하는 Element들을 구해 반환하는 함수
+	* @변경이력      	:
+	* @param url
+	* @param cssSelectorList
+	* @return 
+	*/
+	public List<HtmlElement> getUrls(String url, List<String> cssSelectorList){
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.getUrls(url, cssSelectorList);
 	}
 	
 	/** 
