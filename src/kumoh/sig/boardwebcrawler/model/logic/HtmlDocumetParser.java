@@ -2,8 +2,18 @@ package kumoh.sig.boardwebcrawler.model.logic;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+
+import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -83,6 +93,125 @@ public class HtmlDocumetParser {
 	}
 	
 	/** 
+	* @Method Name	: getNodes 
+	* @Method 설명    	: 
+	* 	1. CssSelector를 정규식으로 변경
+	* 	2. Tree를 순회하면서 CssSelector 정규식과 일치하는 Node들을 List에 저장한다.
+	*   3. List를 반환 한다.
+	* @변경이력      	:
+	* @param tree
+	* @param CssSelector
+	* @return 
+	*/
+	public List<UserMutableTreeNode> getNodes(JTree tree, String cssSelector){
+		List<UserMutableTreeNode> nodeList = new LinkedList<UserMutableTreeNode>();
+		
+		// Tree의 최상위 노드를 구한다.
+		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+		UserMutableTreeNode root = (UserMutableTreeNode) model.getRoot();
+
+		// CssSelector 정규식을 얻는다.
+		String regexCssSelector = getRegexCssSelector(cssSelector);
+		// 전위 순회
+		Enumeration e = root.depthFirstEnumeration();
+		
+		while (e.hasMoreElements()) {
+			// 현재 트리 노드
+			UserMutableTreeNode currNode = null;
+			currNode = (UserMutableTreeNode) e.nextElement();
+			
+			// 정규식과 일치 하는 경우
+			if(isCheckRex(regexCssSelector, currNode.getCssSelector()))
+				nodeList.add(currNode);			
+		}
+		
+		return nodeList;
+	}
+	
+	/** 
+	* @Method Name	: getRegexCssSelector 
+	* @Method 설명    	: cssSelctor를 정규식으로 변경
+	* @변경이력      	:
+	* @param cssSelector 
+	*/
+	private String getRegexCssSelector(String cssSelector){
+		int i = cssSelector.length()-1;
+		int strSize = cssSelector.length()-1;
+		
+		boolean isBeforeNum = false;
+		boolean isCheckFirst = true;
+		
+		// 자를 문자열의 범위
+		int firstIndex = -1, lastIndex = -1;
+		while(i >= 0){
+			// 문자 타입을 정수 타입으로 캐스팅
+			char ch = cssSelector.charAt(i);
+			int castingChar = ch-'0';
+			
+
+			// 1~9사이의 첫 숫자이고 다음 문자가 ')'인 경우
+			if((castingChar >= 0 && castingChar < 10)
+					&& (i < strSize-2)
+					&& cssSelector.charAt(i+1) == ')'
+					&& isCheckFirst 
+					&& !isBeforeNum){
+				isBeforeNum = true;
+				isCheckFirst = false;
+				firstIndex = i;
+				lastIndex = i+1;
+				i--;
+				continue;
+			}
+			
+			// 1~9사이의 숫자이고 이전의 문자가 숫자인 경우
+			if(castingChar >= 0 && castingChar < 10 && !isCheckFirst && isBeforeNum){
+				firstIndex = i;
+				i--;
+				continue;
+			}
+			
+			// 이전의 문자가 숫자이고 현재 문자인 경우
+			if(ch == '(' && !isCheckFirst && isBeforeNum){
+				firstIndex = i;
+				break;
+			}
+			
+			i--;
+		}
+		// 숫자가 없는 경우
+		if(firstIndex == -1 || lastIndex == -1) 
+			return null;
+		
+		StringBuffer sb = new StringBuffer(cssSelector);
+		// 지정된 범위의 숫자를 삭제한다.
+		sb.delete(firstIndex, lastIndex+1);
+		// 삭제된 숫자 위치에 정규식을 삽입한다.
+		sb.insert(firstIndex, "\\([0-9]+\\)");
+		
+		return sb.toString();
+	}
+	
+	/** 
+	* @Method Name	: isCheckRex 
+	* @Method 설명    	: 정규식과 데이터가 매치 된다면 True 아니면 False
+	* @변경이력      	:
+	* @param rex
+	* @param data
+	* @return 
+	*/
+	private boolean isCheckRex(String rex, String data) {
+		Matcher match = null;
+
+		try {
+			Pattern numP = Pattern.compile(rex);
+			match = numP.matcher(data);
+		} catch (PatternSyntaxException e) {
+			e.getStackTrace();
+		}
+		return match.find();
+	}
+	
+	/** 
 	* @Method Name	: getUrl 
 	* @Method 설명    	: 단일 Url을 얻는 함수
 	* @변경이력      	:
@@ -107,6 +236,23 @@ public class HtmlDocumetParser {
 		String newUrl = newPage.getUrl().toString();
 		
 		return newUrl;
+	}
+	
+	/** 
+	* @Method Name	: getUrls 
+	* @Method 설명    	: node의 Href 값을 NodeList에 저장
+	* @변경이력      	:
+	* @param nodeList
+	* @return 
+	*/
+	public List<String> getUrls(List<UserMutableTreeNode> nodeList){
+		// 리스트 인스턴스 생성
+		List<String> nodes = new LinkedList<String>();
+		
+		for(UserMutableTreeNode node : nodeList)
+			nodes.add(node.getHref());
+		
+		return nodes;
 	}
 	
 	/** 

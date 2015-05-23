@@ -121,7 +121,6 @@ public class JTreeProcesser {
 
 			case "Content":
 				cmpStr = currNode.getContent();
-
 				break;
 
 			case "CssSelector":

@@ -6,6 +6,7 @@ import java.util.List;
 import javax.swing.JTable;
 import javax.swing.JTree;
 
+import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 import kumoh.sig.boardwebcrawler.model.logic.HtmlDocumetParser;
 import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
 import kumoh.sig.boardwebcrawler.model.logic.XmlFileProcessor;
@@ -56,6 +57,22 @@ public class ScraperController {
 		return hdp.isExistOnClick(url, cssSelector);
 	}
 
+	
+	/**
+	 * @Method Name : getNodes
+	 * @Method 설명 : 1. CssSelector를 정규식으로 변경 2. Tree를 순회하면서 CssSelector 정규식과
+	 *         일치하는 Node들을 List에 저장한다. 3. List를 반환 한다.
+	 * @변경이력 :
+	 * @param tree
+	 * @param CssSelector
+	 * @return
+	 */
+	public List<UserMutableTreeNode> getNodes(JTree tree, String cssSelector) {
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.getNodes(tree, cssSelector);
+	}
+	
 /** 
 	* @Method Name	: getUrl 
 	* @Method 설명    	: 단일 Url을 얻는 함수
@@ -70,19 +87,20 @@ public class ScraperController {
 		return hdp.getUrl(url, cssSelector);
 	}
 
-/** 
-	* @Method Name	: getUrls 
-	* @Method 설명    	: cssSelector들과 일치하는 Element들을 구해 반환하는 함수
-	* @변경이력      	:
-	* @param url
-	* @param cssSelectorList
-	* @return 
-	*/
-	public List<HtmlElement> getUrls(String url, List<String> cssSelectorList){
+/**
+	 * @Method Name : getUrls
+	 * @Method 설명 : node의 Href 값을 NodeList에 저장
+	 * @변경이력 :
+	 * @param nodeList
+	 * @return
+	 */
+	public List<String> getUrls(List<UserMutableTreeNode> nodeList) {
 		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
 		
-		return hdp.getUrls(url, cssSelectorList);
+		return hdp.getUrls(nodeList);
 	}
+	
+
 	
 	/** 
 	* @Method Name	: buildTree 

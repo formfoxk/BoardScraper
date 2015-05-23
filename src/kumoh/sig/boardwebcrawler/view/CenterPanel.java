@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -361,7 +362,8 @@ public class CenterPanel extends JPanel implements
 						if(dialog.getIsCheckBtnOk()){
 							// 형제 노드 생성가 TRUE인 경우
 							if(dialog.getIsCheckSibling()){
-								System.out.println("형제노드 트루");
+								// URL들을 파싱하여 Tree를 재구성한다.
+								multiNewBuildTree(isExistHref, currNode);
 							}
 							else{
 								// 하나의 URL을 파싱하여 Tree를 재구성한다.
@@ -418,12 +420,23 @@ public class CenterPanel extends JPanel implements
 	}
 	/** 
 	* @Method Name	: multiParsing 
-	* @Method 설명    	: 
+	* @Method 설명    	: URL들을 파싱하여 Tree를 재구성한다.
 	* @변경이력      	:
 	* @param isExistHref 
 	*/
-	private void multiNewBuildTree(boolean isExistHref){
+	private void multiNewBuildTree(boolean isExistHref, UserMutableTreeNode node){
+		ScraperController sc = ScraperController.getInstance();
 		
+		if(isExistHref){
+			List<UserMutableTreeNode> nodeList = sc.getNodes(tree, node.getCssSelector());
+			List<String> urlList = sc.getUrls(nodeList);
+			for(String url : urlList)
+				System.out.println(url);
+		}
+		// OnClick함수가 존재하는 경우
+		else{
+			
+		}
 	}
 	
 	public static JTree getTree(){
