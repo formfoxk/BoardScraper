@@ -1,6 +1,7 @@
 package kumoh.sig.boardwebcrawler.model.logic;
 
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
@@ -54,6 +55,44 @@ public class JTreeProcesser {
 	}
 
 	/** 
+	* @Method Name	: buildTree 
+	* @Method 설명    	: Root에 모든 웹문서 Dom트리를 자식노드로 생성한다.
+	* @변경이력      	: JTree 구축
+	* @param tree
+	* @param documents 
+	*/
+	public void buildTree(JTree tree, List<Element> documents) {
+		
+		// Document가 하나도 존재 하지 않는 경우
+		if (documents.isEmpty()) {
+			System.out.println("JTreeProcesser/buildTree :: Tree 구축 실패");
+		} 
+		
+		else {
+			// tree model을 얻는다.
+			DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
+			
+			// 루트 노드를 얻어 온다.
+			UserMutableTreeNode root = (UserMutableTreeNode)treeModel.getRoot();
+			
+			// 루트의 모든 자식을 삭제 한다.
+			root.removeAllChildren();
+			
+			// 루트의 자식노드를 초기화 한다.
+			root.setTagName("Root");
+			
+			// Root에 모든 웹문서 Dom트리를 자식노드로 생성한다.
+			for(Element document : documents)
+				// Tree 노드 생성(Reculsive Function)
+				createTreeNode(root, document);
+			
+			
+			// 실제 tree를 갱신하여 화면에 보여준다.
+			treeModel.reload();
+		}
+	}
+	
+	/** 
 	* @Method Name	: createTreeNode 
 	* @Method 설명    	: 트리노드를 생성하는 함수 재귀적으로 자식노드를 생성한다.
 	* @변경이력      	:
@@ -103,6 +142,9 @@ public class JTreeProcesser {
 		// Tree의 최상위 노드를 구한다.
 		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
 		UserMutableTreeNode root = (UserMutableTreeNode)model.getRoot();
+
+		// 트리를 접는다.
+		collapseAll(tree);
 		
 		// 전위 순회
 		Enumeration e = root.depthFirstEnumeration();
@@ -134,6 +176,7 @@ public class JTreeProcesser {
 			
 			// 문자열에 검색하고자 하는 문자가 포함되어 있는 경우
 			if(cmpStr.contains(query)){
+				
 				// 현재 노드의 path를 구한다.
 				TreePath currPath = new TreePath(currNode.getPath());
 				
@@ -141,6 +184,13 @@ public class JTreeProcesser {
 				tree.expandPath(currPath);
 			}
 		}
-		
+	}
+	
+	public void collapseAll(JTree tree) {
+		int row = tree.getRowCount() - 1;
+		while (row >= 0) {
+			tree.collapseRow(row);
+			row--;
+		}
 	}
 }

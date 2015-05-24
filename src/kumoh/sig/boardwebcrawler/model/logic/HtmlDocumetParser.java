@@ -75,6 +75,52 @@ public class HtmlDocumetParser {
 	}
 
 	/** 
+	* @Method Name	: getDocuments 
+	* @Method 설명    	: url들을 사용하여 doucment들을 얻는 함수
+	* @변경이력      	:
+	* @param urls
+	* @return 
+	*/
+	public List<Element> getDocuments(List<String> urls) {
+		// document들을 저장할 연결리스트 생성
+		List<Element> documentList = new LinkedList<Element>();
+		// Thread의 결과값을 저장할 연결리스트 생성
+		List<Future<Element>> resultList = new LinkedList<Future<Element>>();
+
+		// ThreadPool 생성
+		ThreadPoolExecutor executor = getTreadPoolExecutor(10);
+
+		// Documents를 구한다.
+		for (String url : urls) {
+			// docuement를 파싱하는 클레스 생성
+			DocumentParser documentParser = new DocumentParser(url);
+
+			// docuement를 파싱하여 얻는다.
+			Future<Element> result = executor.submit(documentParser);
+
+			// docuement를 List에 저장한다.
+			resultList.add(result);
+		}
+
+		for (Future<Element> future : resultList) {
+			try {
+				// document를 얻는다.
+				Element newDocument = future.get();
+
+				// docuement가 null이 아닌 경우
+				if (newDocument != null)
+					documentList.add(future.get());
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+		// executor의 서비스를 종료 한다.
+		executor.shutdown();
+
+		return documentList;
+	}
+	
+	/** 
 	* @Method Name	: isExist 
 	* @Method 설명    	: OnClick함수가 존재 유무의 값을 반환 하는 함수
 	* @변경이력      	:
@@ -280,7 +326,7 @@ public class HtmlDocumetParser {
 		List<Future<String>> resultList = new LinkedList<Future<String>>();
 		
 		// ThreadPool 생성
-		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+		ThreadPoolExecutor executor = getTreadPoolExecutor(10);
 		
 		// Urls를 구한다.
 		for (UserMutableTreeNode node : nodeList) {
@@ -316,6 +362,19 @@ public class HtmlDocumetParser {
         executor.shutdown();
     
         return urlList;
+	}
+	
+	/** 
+	* @Method Name	: getTreadPoolExecutor 
+	* @Method 설명    	: Thread Pool을 생성하는 함수(알고리즘 추후 보수)
+	* @변경이력      	:
+	* @param count
+	* @return 
+	*/
+	private ThreadPoolExecutor getTreadPoolExecutor(int count){
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(count);
+		
+		return executor;
 	}
 	
 	/** 
@@ -404,6 +463,15 @@ public class HtmlDocumetParser {
 		return hdpInstance;
 	}
 	
+	/** 
+	* @FileName    	: HtmlDocumetParser.java 
+	* @Project    	: BoardWebCrawler 
+	* @Date       	: 2015. 5. 24. 
+	* @작성자     	: YuJoo 
+	* @프로그램 설명		: URL을 파싱하는 클레스(쓰레드)
+	* @프로그램 기능		:
+	* @변경이력		:  
+	*/
 	private class UrlParser implements Callable<String>
 	{
 		private String url;
@@ -436,4 +504,31 @@ public class HtmlDocumetParser {
 			return newUrl;
 	    }
 	}
+	
+	/** 
+	* @FileName    	: HtmlDocumetParser.java 
+	* @Project    	: BoardWebCrawler 
+	* @Date       	: 2015. 5. 24. 
+	* @작성자     	: YuJoo 
+	* @프로그램 설명		: 웹문서를 파싱하는 클레스(쓰레드)
+	* @프로그램 기능		:
+	* @변경이력		:  
+	*/
+	private class DocumentParser  implements Callable<Element>
+	{
+		private String url;
+
+	    public DocumentParser(String url) {
+	    	this.url = url;
+	    }
+	 
+	    @Override
+	    public Element call() throws Exception {
+	    	// url을 통해 웹문서를 파싱하고 CssSelector와 일치하는 노드를 얻는다.	    	
+	    	Element element = getDocument(url);
+
+			return element;
+	    }
+	}
+	
 }

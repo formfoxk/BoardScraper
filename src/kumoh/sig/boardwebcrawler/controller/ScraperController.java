@@ -43,6 +43,19 @@ public class ScraperController {
 		return hdp.getDocument(url);
 	}
 	
+	/** 
+	* @Method Name	: getDocuments 
+	* @Method 설명    	: url들을 사용하여 doucment들을 얻는 함수
+	* @변경이력      	:
+	* @param urls
+	* @return 
+	*/
+	public List<Element> getDocuments(List<String> urls){
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.getDocuments(urls);
+	}
+	
 	/**
 	* @Method Name	: isExist 
 	* @Method 설명    	: OnClick함수가 존재 유무의 값을 반환 하는 함수
@@ -56,7 +69,6 @@ public class ScraperController {
 		
 		return hdp.isExistOnClick(url, cssSelector);
 	}
-
 	
 	/**
 	 * @Method Name : getNodes
@@ -124,6 +136,19 @@ public class ScraperController {
 		JTreeProcesser jp = new JTreeProcesser();
 		
 		jp.buildTree(tree, document);
+	}
+	
+	/** 
+	* @Method Name	: buildTree 
+	* @Method 설명    	: Root에 모든 웹문서 Dom트리를 자식노드로 생성한다.
+	* @변경이력      	: JTree 구축
+	* @param tree
+	* @param documents 
+	*/
+	public void buildTree(JTree tree, List<Element> documents) {
+		JTreeProcesser jp = new JTreeProcesser();
+		
+		jp.buildTree(tree, documents);
 	}
 	
 	/** 

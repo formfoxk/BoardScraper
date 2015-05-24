@@ -271,23 +271,27 @@ public class CenterPanel extends JPanel implements
 		if (e.getSource() == btnUrl) {
 			String url = tfUrl.getText();
 
-			// 컨트롤 클레스를 얻어 온다.
-			ScraperController sc = ScraperController.getInstance();
-			// Html문서를 얻어 온다.
-			Element document = sc.getDocument(url);
-
-			// Html 문서를 얻지 못한 경우
-			if (document == null) {
-				// 오류 메시지 박스 출력
+			if(url.isEmpty())
 				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
 						JOptionPane.ERROR_MESSAGE);
+			else{
+				// 컨트롤 클레스를 얻어 온다.
+				ScraperController sc = ScraperController.getInstance();
+				// Html문서를 얻어 온다.
+				Element document = sc.getDocument(url);
 
-				// 텍스트 필드 초기화
-				tfUrl.setText("");
-			}
-			else {
-				// tree를 구축한다.
-				sc.buildTree(tree, document);
+				// Html 문서를 얻지 못한 경우
+				if (document == null) {
+					// 오류 메시지 박스 출력
+					JOptionPane.showMessageDialog(null, "Document를 얻지 못했습니다.",
+							"ERROR", JOptionPane.ERROR_MESSAGE);
+
+					// 텍스트 필드 초기화
+					tfUrl.setText("");
+				} else {
+					// tree를 구축한다.
+					sc.buildTree(tree, document);
+				}
 			}
 		}
 		
@@ -301,7 +305,7 @@ public class CenterPanel extends JPanel implements
 			}
 				
 			else{
-				ScraperController sc = ScraperController.getInstance();
+				ScraperController sc = ScraperController.getInstance();				
 				sc.searchTreeNode(tree, searchStr, cbSearch.getSelectedItem().toString());
 			}
 		}
@@ -430,18 +434,21 @@ public class CenterPanel extends JPanel implements
 		// cssSelector와 일치하는 node들을 얻는다.
 		List<UserMutableTreeNode> nodeList = sc.getNodes(tree, node.getCssSelector());
 		
-		if(isExistHref){
-			
-			List<String> urlList = sc.getUrls(nodeList);
-			for(String url : urlList)
-				System.out.println(url);
-		}
+		List<String> urlList = null;
+		
+		// href가 존재하는 경우
+		if(isExistHref)
+			urlList = sc.getUrls(nodeList);
 		// OnClick함수가 존재하는 경우
 		else{
-			List<String> urlList = sc.getUrls(tfUrl.getText(), nodeList);
-			for(String url : urlList)
-				System.out.println(url);
+			urlList = sc.getUrls(tfUrl.getText(), nodeList);
 		}
+		
+		// document들을 얻어온다.
+		List<Element> documents = sc.getDocuments(urlList);
+		
+		// 트리를 재구축한다.
+		sc.buildTree(tree, documents);
 	}
 	
 	public static JTree getTree(){
