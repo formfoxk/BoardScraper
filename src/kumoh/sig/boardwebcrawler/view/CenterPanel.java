@@ -427,15 +427,20 @@ public class CenterPanel extends JPanel implements
 	private void multiNewBuildTree(boolean isExistHref, UserMutableTreeNode node){
 		ScraperController sc = ScraperController.getInstance();
 		
+		// cssSelector와 일치하는 node들을 얻는다.
+		List<UserMutableTreeNode> nodeList = sc.getNodes(tree, node.getCssSelector());
+		
 		if(isExistHref){
-			List<UserMutableTreeNode> nodeList = sc.getNodes(tree, node.getCssSelector());
+			
 			List<String> urlList = sc.getUrls(nodeList);
 			for(String url : urlList)
 				System.out.println(url);
 		}
 		// OnClick함수가 존재하는 경우
 		else{
-			
+			List<String> urlList = sc.getUrls(tfUrl.getText(), nodeList);
+			for(String url : urlList)
+				System.out.println(url);
 		}
 	}
 	

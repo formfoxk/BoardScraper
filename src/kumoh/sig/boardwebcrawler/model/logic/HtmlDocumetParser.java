@@ -5,13 +5,17 @@ import java.net.MalformedURLException;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
 
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
 
@@ -79,8 +83,11 @@ public class HtmlDocumetParser {
 	* @return 
 	*/
 	public boolean isExistOnClick(String url, String cssSelector){
+		// HtmlPage를 얻는다.
+		HtmlPage page = getPage(url);
+		
 		// url을 통해 웹문서를 파싱하고 CssSelector와 일치하는 노드를 얻는다.
-		HtmlElement element = getElement(url, cssSelector);
+		HtmlElement element = getElement(page, cssSelector);
 		
 		// OnClick 속성을 얻는다.
 		String onClkAttr = element.getOnClickAttribute();
@@ -220,8 +227,11 @@ public class HtmlDocumetParser {
 	* @return 
 	*/
 	public String getUrl(String url, String cssSelector){
+		// Page를 얻어 온다.
+		HtmlPage page = getPage(url);
+		
 		// url을 통해 웹문서를 파싱하고 CssSelector와 일치하는 노드를 얻는다.
-		HtmlElement element = getElement(url, cssSelector);
+		HtmlElement element = getElement(page, cssSelector);
 		
 		// 노드를 클릭하여 
 		HtmlPage newPage = null;
@@ -257,39 +267,69 @@ public class HtmlDocumetParser {
 	
 	/** 
 	* @Method Name	: getUrls 
-	* @Method 설명    	: cssSelector들과 일치하는 Element들을 구해 반환하는 함수
+	* @Method 설명    	: Javascript::onclick함수의 이벤트를 발생 시켜 웹페이지를 파싱한 후 url주소를 얻는 함수
 	* @변경이력      	:
 	* @param url
 	* @param cssSelectorList
 	* @return 
 	*/
-	public List<HtmlElement> getUrls(String url, List<String> cssSelectorList) {
-		// Html Element를 저장할 연결리스트 생성
-		List<HtmlElement> elementList = new LinkedList<HtmlElement>();
-
+	public List<String> getUrls(String url, List<UserMutableTreeNode> nodeList) {
+		// url주소들을 저장할 연결리스트 생성
+		List<String> urlList = new LinkedList<String>();
+		// Thread의 결과값을 저장할 연결리스트 생성
+		List<Future<String>> resultList = new LinkedList<Future<String>>();
+		
+		// ThreadPool 생성
+		ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+		
+		// Urls를 구한다.
+		for (UserMutableTreeNode node : nodeList) {
+			// 노드의 CssSelector를 얻는다.
+			String cssSelector = node.getCssSelector();
+			
+			// Url을 파싱하는 클레스 생성
+			UrlParser urlParser = new UrlParser(url, cssSelector);
+			
+			// url을 파싱하여 얻는다.
+			Future<String> result = executor.submit(urlParser);
+			
+			// element를 List에 저장한다.
+			resultList.add(result);
+		}
+		
+		for(Future<String> future: resultList){
+            try
+            {
+            	// 얻어온 Url주소를 List에 저장한다.
+            	String newUrl = future.get();
+            	
+            	// 현재 URL과 추출된 URL이 같지 않은 경우에만 List에 추가
+            	if(!newUrl.equals(url))
+            		urlList.add(future.get()); 
+            }
+            catch (InterruptedException | ExecutionException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        //executor의 서비스를 종료 한다.
+        executor.shutdown();
+    
+        return urlList;
+	}
+	
+	/** 
+	* @Method Name	: getHtmlPage 
+	* @Method 설명    	: HtmlUnit라이브러리의 HtmlPage를 얻어오는 함수
+	* @변경이력      	:
+	* @param url
+	* @return 
+	*/
+	public HtmlPage getHtmlPage(String url) {
 		// Page를 얻어 온다.
 		HtmlPage page = getPage(url);
 
-		// Selectors 객체 생성
-		Selectors selectors = new Selectors(new W3CNode(page));
-
-		// Urls를 구한다.
-		for (String cssSelector : cssSelectorList) {
-			// CssSelector와 일치하는 Node를 구한다.
-			Node node = (Node) selectors.querySelector(cssSelector);
-
-			// Xpath를 얻어 온다.
-			String xpath = ((HtmlElement) node).getCanonicalXPath().toString();
-
-			// xPath와 일치하는 HtmlElement를 얻는다.
-			HtmlElement element = (HtmlElement) page.getByXPath(xpath).get(0);
-
-			// element를 List에 저장한다.
-			elementList.add(element);
-		}
-
-		return elementList;
-
+		return page;
 	}
 	
 	/** 
@@ -302,10 +342,7 @@ public class HtmlDocumetParser {
 	* @param cssSelector
 	* @return 
 	*/
-	private HtmlElement getElement(String url, String cssSelector){
-		// Page를 얻어 온다.
-		HtmlPage page = getPage(url);
-		
+	private HtmlElement getElement(HtmlPage page, String cssSelector){
 		// Selectors 객체 생성
 		Selectors selectors = new Selectors(new W3CNode(page));
 		
@@ -365,5 +402,38 @@ public class HtmlDocumetParser {
 			}
 		}
 		return hdpInstance;
+	}
+	
+	private class UrlParser implements Callable<String>
+	{
+		private String url;
+	    private String cssSelector;
+	 
+	    public UrlParser(String url, String cssSelector) {
+	    	this.url = url;
+	        this.cssSelector = cssSelector;
+	    }
+	 
+	    @Override
+	    public String call() throws Exception {
+	    	HtmlPage page = getPage(url);
+	    	
+	    	// url을 통해 웹문서를 파싱하고 CssSelector와 일치하는 노드를 얻는다.	    	
+			HtmlElement element = getElement(page, cssSelector);
+			
+			// 노드를 클릭하여 
+			HtmlPage newPage = null;
+			try {
+				newPage = element.click();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			// url을 얻는다.
+			String newUrl = newPage.getUrl().toString();
+			
+			return newUrl;
+	    }
 	}
 }

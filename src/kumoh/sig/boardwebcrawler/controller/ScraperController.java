@@ -99,8 +99,20 @@ public class ScraperController {
 		
 		return hdp.getUrls(nodeList);
 	}
-	
-
+		
+	/** 
+	* @Method Name	: getUrls 
+	* @Method 설명    	: Javascript::onclick함수의 이벤트를 발생 시켜 웹페이지를 파싱한 후 url주소를 얻는 함수
+	* @변경이력      	:
+	* @param url
+	* @param cssSelectorList
+	* @return 
+	*/
+	public List<String> getUrls(String url, List<UserMutableTreeNode> nodeList){
+		HtmlDocumetParser hdp = HtmlDocumetParser.getInstance();
+		
+		return hdp.getUrls(url, nodeList);
+	}
 	
 	/** 
 	* @Method Name	: buildTree 
