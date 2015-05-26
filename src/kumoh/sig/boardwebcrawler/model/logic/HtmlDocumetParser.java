@@ -3,6 +3,7 @@ package kumoh.sig.boardwebcrawler.model.logic;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -188,8 +189,8 @@ public class HtmlDocumetParser {
 	* @param cssSelector 
 	*/
 	private String getRegexCssSelector(String cssSelector){
-		int i = cssSelector.length()-1;
 		int strSize = cssSelector.length()-1;
+		int i = strSize;
 		
 		boolean isBeforeNum = false;
 		boolean isCheckFirst = true;
@@ -206,7 +207,7 @@ public class HtmlDocumetParser {
 
 			// 1~9사이의 첫 숫자이고 다음 문자가 ')'인 경우
 			if((castingChar >= 0 && castingChar < 10)
-					&& (i < strSize-2)
+					&& (i < strSize)
 					&& cssSelector.charAt(i+1) == ')'
 					&& isCheckFirst 
 					&& !isBeforeNum){
@@ -227,8 +228,7 @@ public class HtmlDocumetParser {
 			
 			// 이전의 문자가 숫자이고 현재 문자인 경우
 			if(ch == '(' && !isCheckFirst && isBeforeNum){
-				if(firstIndex > 0)
-					indexList.add(new RegexIndex(firstIndex-1, lastIndex));
+				indexList.add(new RegexIndex(firstIndex-1, lastIndex));
 				
 				isBeforeNum = false;
 				isCheckFirst = true;
@@ -240,7 +240,7 @@ public class HtmlDocumetParser {
 		}
 		// 숫자가 없는 경우
 		if(firstIndex == -1 || lastIndex == -1) 
-			return null;
+			return cssSelector;
 		
 		StringBuffer sb = new StringBuffer(cssSelector);
 		String regexStr = "\\([0-9]+\\)";
@@ -250,6 +250,7 @@ public class HtmlDocumetParser {
 			// 삭제된 숫자 위치에 정규식을 삽입한다.
 			sb.insert(ri.firstIndex, "\\([0-9]+\\)");
 		}
+		sb.append("$");
 		
 		return sb.toString();
 	}
@@ -322,14 +323,15 @@ public class HtmlDocumetParser {
 	*/
 	public List<String> getUrls(List<UserMutableTreeNode> nodeList){
 		// 리스트 인스턴스 생성
-		List<String> nodes = new LinkedList<String>();
+		// 중복 제거를 하기 위해서 HashSet사용
+		HashSet<String> urlList = new HashSet<String>();
 		
-		for(UserMutableTreeNode node : nodeList){
-			nodes.add(node.getHref());
-			System.out.println(node.getHref());
-		}
+		for(UserMutableTreeNode node : nodeList)
+			urlList.add(node.getHref());
 		
-		return nodes;
+		// List 변환
+		List<String> result = new LinkedList<String>(new HashSet<String>(urlList));
+		return result;
 	}
 	
 	/** 
@@ -341,8 +343,9 @@ public class HtmlDocumetParser {
 	* @return 
 	*/
 	public List<String> getUrls(String url, List<UserMutableTreeNode> nodeList) {
-		// url주소들을 저장할 연결리스트 생성
-		List<String> urlList = new LinkedList<String>();
+		// 중복 제거를 하기 위해서 HashSet사용
+		HashSet<String> urlList = new HashSet<String>();
+
 		// Thread의 결과값을 저장할 연결리스트 생성
 		List<Future<String>> resultList = new LinkedList<Future<String>>();
 		
@@ -382,7 +385,9 @@ public class HtmlDocumetParser {
         //executor의 서비스를 종료 한다.
         executor.shutdown();
     
-        return urlList;
+        // List 변환
+     	List<String> result = new LinkedList<String>(new HashSet<String>(urlList));
+        return result;
 	}
 	
 	/** 

@@ -137,7 +137,7 @@ public class XmlFileProcessor {
 			rootElement.appendChild(oneLevelChildElement);
 			
 			oneLevelChildElement = doc.createElement("author");
-			oneLevelChildElement.appendChild(doc.createTextNode(tableName));
+			oneLevelChildElement.appendChild(doc.createTextNode(author));
 			rootElement.appendChild(oneLevelChildElement);
 			
 			// RootElement의 자식노드로 ScraperTable 정보 저장

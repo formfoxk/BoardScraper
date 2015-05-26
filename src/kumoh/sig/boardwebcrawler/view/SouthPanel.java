@@ -10,6 +10,8 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -21,12 +23,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
+import kumoh.sig.boardwebcrawler.model.data.XmlNode;
 
 /**
  *  
@@ -215,7 +219,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 		} else if (e.getSource() == btnExport) {
 			executeBtnExport();
 		} else if (e.getSource() == btnExecute) {
-			
+			executeBtnExecute();
 		}
 	}
 	
@@ -375,4 +379,28 @@ public class SouthPanel extends JPanel implements ActionListener {
 			}
 		}
 	}
+	
+	/** 
+	* @Method Name	: executeBtnExecute 
+	* @Method 설명    	: scraper Table의 Execute를 처리하는 함수
+	* @변경이력      	: 
+	*/
+	private void executeBtnExecute(){
+		ScraperController sc = ScraperController.getInstance();
+		JTree tree = CenterPanel.getTree();
+		List<LinkedList<XmlNode>> xmlNodesList = sc.NodeDataExtractionExecute(tree, table);
+		
+		if(xmlNodesList == null)
+			System.out.println("NULL");
+		else{
+			for(LinkedList<XmlNode> xmlNodes : xmlNodesList){
+				System.out.println("---Node---");
+				for(XmlNode xmlNode : xmlNodes){
+					System.out.println(xmlNode.getTag() + " : " + xmlNode.getContent());
+				}
+				System.out.println();
+			}
+		}
+	}
+	
 }

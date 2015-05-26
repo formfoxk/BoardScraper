@@ -1,19 +1,20 @@
 package kumoh.sig.boardwebcrawler.controller;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JTable;
 import javax.swing.JTree;
 
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
+import kumoh.sig.boardwebcrawler.model.data.XmlNode;
 import kumoh.sig.boardwebcrawler.model.logic.HtmlDocumetParser;
 import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
+import kumoh.sig.boardwebcrawler.model.logic.NodeDataExtractionProcesser;
 import kumoh.sig.boardwebcrawler.model.logic.XmlFileProcessor;
 
 import org.jsoup.nodes.Element;
-
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 /** 
 * @FileName    	: ScraperController.java 
@@ -189,6 +190,20 @@ public class ScraperController {
 	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author){
 		XmlFileProcessor xfp = new XmlFileProcessor();
 		xfp.exportXmlFileOfScraperTable(path, table, tableName, author);
+	}
+	
+	/** 
+	* @Method Name	: NodeDataExtractionExecute 
+	* @Method 설명    	: 트리와 테이블의 값을 비교하여 데이터를 추출 하는 함수
+	* @변경이력      	:
+	* @param tree
+	* @param jTable
+	* @return 
+	*/
+	public List<LinkedList<XmlNode>> NodeDataExtractionExecute(JTree tree, JTable jTable){
+		NodeDataExtractionProcesser ndep = new NodeDataExtractionProcesser();
+		
+		return ndep.execute(tree, jTable);
 	}
 	
 	/** 

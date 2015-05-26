@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -39,6 +40,7 @@ import javax.swing.tree.TreePath;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
+import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
 
 import org.jsoup.nodes.Element;
 
@@ -56,6 +58,7 @@ public class CenterPanel extends JPanel implements
 		TreeSelectionListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger logger = Logger.getLogger(CenterPanel.class.getName());
 	
 	private JFrame frame;
 	
@@ -71,7 +74,7 @@ public class CenterPanel extends JPanel implements
 	private JPanel panelTable = null; 
 	
 	// 트리
-	private static JTree tree;
+	private static JTree tree = null;
 	
 	// 생성자
 	public CenterPanel(JFrame frame) {
@@ -306,6 +309,7 @@ public class CenterPanel extends JPanel implements
 			} else {
 				// tree를 구축한다.
 				sc.buildTree(tree, document);
+				tfSearch.setText("");
 			}
 		}
 	}
@@ -466,7 +470,9 @@ public class CenterPanel extends JPanel implements
 		List<Element> documents = sc.getDocuments(urlList);
 		
 		// 트리를 재구축한다.
+		logger.info("buildTree Start");
 		sc.buildTree(tree, documents);
+		logger.info("buildTree End");
 	}
 	
 	public static JTree getTree(){

@@ -2,6 +2,7 @@ package kumoh.sig.boardwebcrawler.model.logic;
 
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
@@ -20,7 +21,7 @@ import org.jsoup.nodes.Element;
 * @프로그램 기능		: JTree 구축
 * @변경이력		:  
 */
-public class JTreeProcesser {			
+public class JTreeProcesser {		
 	/** 
 	* @Method Name	: buildTree 
 	* @Method 설명    	: 트리를 구축하는 함수
@@ -28,6 +29,7 @@ public class JTreeProcesser {
 	* @param url 
 	*/
 	public void buildTree(JTree tree, Element document) {
+		 
 		// HtmlDocument가 NULL인 경우
 		if (document == null) {
 			System.out.println("JTreeProcesser/buildTree :: Tree 구축 실패");
