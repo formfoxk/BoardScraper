@@ -269,48 +269,66 @@ public class CenterPanel extends JPanel implements
 	public void actionPerformed(ActionEvent e) {
 		// Search 버튼을 클릭 한 경우
 		if (e.getSource() == btnUrl) {
-			String url = tfUrl.getText();
-
-			if(url.isEmpty())
-				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
-						JOptionPane.ERROR_MESSAGE);
-			else{
-				// 컨트롤 클레스를 얻어 온다.
-				ScraperController sc = ScraperController.getInstance();
-				// Html문서를 얻어 온다.
-				Element document = sc.getDocument(url);
-
-				// Html 문서를 얻지 못한 경우
-				if (document == null) {
-					// 오류 메시지 박스 출력
-					JOptionPane.showMessageDialog(null, "Document를 얻지 못했습니다.",
-							"ERROR", JOptionPane.ERROR_MESSAGE);
-
-					// 텍스트 필드 초기화
-					tfUrl.setText("");
-				} else {
-					// tree를 구축한다.
-					sc.buildTree(tree, document);
-				}
-			}
+			executeBtnUrl();
 		}
 		
 		// Find 버튼을 클릭 한 경우
 		if (e.getSource() == btnSearch){
-			String searchStr = tfSearch.getText();
-			if(searchStr.isEmpty()){
-				// 오류 메시지 박스 출력
-				JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
-						JOptionPane.ERROR_MESSAGE);
-			}
-				
-			else{
-				ScraperController sc = ScraperController.getInstance();				
-				sc.searchTreeNode(tree, searchStr, cbSearch.getSelectedItem().toString());
-			}
+			executeBtnSearch();
 		}
 	}
 
+	/** 
+	* @Method Name	: executeBtnUrl 
+	* @Method 설명    	: Url버튼을 클릭시 실행되는 함수
+	* @변경이력      	: 
+	*/
+	private void executeBtnUrl(){
+		String url = tfUrl.getText();
+
+		if(url.isEmpty())
+			JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+		else{
+			// 컨트롤 클레스를 얻어 온다.
+			ScraperController sc = ScraperController.getInstance();
+			// Html문서를 얻어 온다.
+			Element document = sc.getDocument(url);
+
+			// Html 문서를 얻지 못한 경우
+			if (document == null) {
+				// 오류 메시지 박스 출력
+				JOptionPane.showMessageDialog(null, "Document를 얻지 못했습니다.",
+						"ERROR", JOptionPane.ERROR_MESSAGE);
+
+				// 텍스트 필드 초기화
+				tfUrl.setText("");
+			} else {
+				// tree를 구축한다.
+				sc.buildTree(tree, document);
+			}
+		}
+	}
+	
+	/** 
+	* @Method Name	: executeBtnSearch 
+	* @Method 설명    	: 
+	* @변경이력      	: 
+	*/
+	private void executeBtnSearch(){
+		String searchStr = tfSearch.getText();
+		if(searchStr.isEmpty()){
+			// 오류 메시지 박스 출력
+			JOptionPane.showMessageDialog(null, "입력값이 없습니다.", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
+		}
+			
+		else{
+			ScraperController sc = ScraperController.getInstance();				
+			sc.searchTreeNode(tree, searchStr, cbSearch.getSelectedItem().toString());
+		}
+	}
+	
 	/** 
 	* @FileName    	: CenterPanel.java 
 	* @Project    	: BoardWebCrawler 
@@ -443,7 +461,7 @@ public class CenterPanel extends JPanel implements
 		else{
 			urlList = sc.getUrls(tfUrl.getText(), nodeList);
 		}
-		
+
 		// document들을 얻어온다.
 		List<Element> documents = sc.getDocuments(urlList);
 		

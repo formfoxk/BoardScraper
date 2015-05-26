@@ -82,10 +82,11 @@ public class JTreeProcesser {
 			root.setTagName("Root");
 			
 			// Root에 모든 웹문서 Dom트리를 자식노드로 생성한다.
-			for(Element document : documents)
-				// Tree 노드 생성(Reculsive Function)
-				createTreeNode(root, document);
-			
+			for(Element document : documents){
+				if(document != null)
+					// Tree 노드 생성(Reculsive Function)
+					createTreeNode(root, document);
+			}
 			
 			// 실제 tree를 갱신하여 화면에 보여준다.
 			treeModel.reload();
@@ -110,24 +111,45 @@ public class JTreeProcesser {
 				
 				// 자식노드를 얻는다.
 				Element childElement = parentElement.child(i);	
+					
+				// 현재 태그 
+				String currTag = childElement.tagName();
 				
-				//자식노드의 자식노드가 존재 하지 않는  경우
-				if (childElement.children().isEmpty()) continue;
-				
-				// 자식 노드 생성
-				UserMutableTreeNode childNode = new UserMutableTreeNode(
-						childElement.tagName()
-						, childElement.text()
-						, childElement.cssSelector()
-						, childElement.attr("abs:href"));
-						
-				// 부모노드에 자식노드 추가
-				parentNode.add(childNode);
-				
-				// 재귀적으로 자식노드 생성
-				createTreeNode(childNode, childElement);
+				// Jsoup라이브러리에서 처리 하지 못하는 태그가 아닌 경우
+				if(!isExeptionTag(currTag)){
+					// 자식 노드 생성
+					UserMutableTreeNode childNode = new UserMutableTreeNode(
+							childElement.tagName(), childElement.text(),
+							childElement.cssSelector(),
+							childElement.attr("abs:href"));
+
+					// 부모노드에 자식노드 추가
+					parentNode.add(childNode);
+
+					// 자식노드의 자식노드가 존재 하지 않는 경우
+					if (childElement.children().isEmpty())
+						continue;
+
+					// 재귀적으로 자식노드 생성
+					createTreeNode(childNode, childElement);
+				}
 			}
 		}
+	}
+	
+	/** 
+	* @Method Name	: isExeptionTag 
+	* @Method 설명    	: jsoup에서 처리 하지 못하는 예외 테크인지 확인하는 함수
+	* @변경이력      	:
+	* @param tag
+	* @return 
+	*/
+	private boolean isExeptionTag(String tag){
+		switch(tag){
+		case "o:p" :
+			return true;
+		}
+		return false;
 	}
 	
 	/** 
@@ -147,7 +169,7 @@ public class JTreeProcesser {
 		collapseAll(tree);
 		
 		// 전위 순회
-		Enumeration e = root.depthFirstEnumeration();
+		Enumeration e = root.preorderEnumeration();
 
 		while (e.hasMoreElements()) {
 			// 현재 트리 노드
@@ -173,10 +195,8 @@ public class JTreeProcesser {
 				cmpStr = currNode.getHref();
 				break;
 			}
-			
 			// 문자열에 검색하고자 하는 문자가 포함되어 있는 경우
-			if(cmpStr.contains(query)){
-				
+			if(cmpStr.contains(query) || cmpStr.equals(query)){	
 				// 현재 노드의 path를 구한다.
 				TreePath currPath = new TreePath(currNode.getPath());
 				

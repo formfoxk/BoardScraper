@@ -194,6 +194,8 @@ public class HtmlDocumetParser {
 		boolean isBeforeNum = false;
 		boolean isCheckFirst = true;
 		
+		// 정규식으로 변환할 인덱스
+		List<RegexIndex> indexList = new LinkedList<RegexIndex>();
 		// 자를 문자열의 범위
 		int firstIndex = -1, lastIndex = -1;
 		while(i >= 0){
@@ -225,8 +227,13 @@ public class HtmlDocumetParser {
 			
 			// 이전의 문자가 숫자이고 현재 문자인 경우
 			if(ch == '(' && !isCheckFirst && isBeforeNum){
-				firstIndex = i;
-				break;
+				if(firstIndex > 0)
+					indexList.add(new RegexIndex(firstIndex-1, lastIndex));
+				
+				isBeforeNum = false;
+				isCheckFirst = true;
+				i--;
+				continue;
 			}
 			
 			i--;
@@ -236,12 +243,24 @@ public class HtmlDocumetParser {
 			return null;
 		
 		StringBuffer sb = new StringBuffer(cssSelector);
-		// 지정된 범위의 숫자를 삭제한다.
-		sb.delete(firstIndex, lastIndex+1);
-		// 삭제된 숫자 위치에 정규식을 삽입한다.
-		sb.insert(firstIndex, "\\([0-9]+\\)");
+		String regexStr = "\\([0-9]+\\)";
+		for(RegexIndex ri : indexList){
+			// 지정된 범위의 숫자를 삭제한다.
+			sb.delete(ri.firstIndex, ri.lastIndex+1);
+			// 삭제된 숫자 위치에 정규식을 삽입한다.
+			sb.insert(ri.firstIndex, "\\([0-9]+\\)");
+		}
 		
 		return sb.toString();
+	}
+	private class RegexIndex{
+		int firstIndex;
+		int lastIndex;
+		
+		public RegexIndex(int firstIndex, int lastIndex){
+			this.firstIndex = firstIndex;
+			this.lastIndex = lastIndex;
+		}
 	}
 	
 	/** 
@@ -305,8 +324,10 @@ public class HtmlDocumetParser {
 		// 리스트 인스턴스 생성
 		List<String> nodes = new LinkedList<String>();
 		
-		for(UserMutableTreeNode node : nodeList)
+		for(UserMutableTreeNode node : nodeList){
 			nodes.add(node.getHref());
+			System.out.println(node.getHref());
+		}
 		
 		return nodes;
 	}
