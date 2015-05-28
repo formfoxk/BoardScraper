@@ -42,7 +42,7 @@ public class XmlFileProcessor {
 	* @param table
 	* @param nameAndAuthor 
 	*/
-	public void importXmlFileOfScraperTable(File file, JTable table, String[] nameAndAuthor){
+	public void importXmlFileOfScraperTable(File file, JTable table, String[] subContent){
 		try {
 			// Doucument를 얻는다.
 			DocumentBuilderFactory docBuildFact = DocumentBuilderFactory.newInstance();
@@ -54,13 +54,19 @@ public class XmlFileProcessor {
 			Element nameElement = (Element)doc.getElementsByTagName("tableName").item(0);
 			Node nameNode = nameElement.getFirstChild();
 			String name = nameNode.getNodeValue();
-			nameAndAuthor[0] = name;
+			subContent[0] = name;
 			
 			// author 태그의 값을 얻는다.
 			Element authorElement = (Element)doc.getElementsByTagName("author").item(0);
 			Node authorNode = authorElement.getFirstChild();
 			String author = authorNode.getNodeValue();
-			nameAndAuthor[1] = author;
+			subContent[1] = author;
+			
+			// author 태그의 값을 얻는다.
+			Element urlElement = (Element)doc.getElementsByTagName("url").item(0);
+			Node urlNode = urlElement.getFirstChild();
+			String url = urlNode.getNodeValue();
+			subContent[2] = url;
 			
 			// table의 모델을 얻어 온다.
 			DefaultTableModel model = (DefaultTableModel)table.getModel();
@@ -119,7 +125,7 @@ public class XmlFileProcessor {
 	* @param tableName
 	* @param author 
 	*/
-	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author){
+	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author, String url){
 		try {
 			// Document를 얻는다.
 			DocumentBuilderFactory docFactory = DocumentBuilderFactory
@@ -142,6 +148,10 @@ public class XmlFileProcessor {
 			
 			oneLevelChildElement = doc.createElement("author");
 			oneLevelChildElement.appendChild(doc.createTextNode(author));
+			rootElement.appendChild(oneLevelChildElement);
+			
+			oneLevelChildElement = doc.createElement("url");
+			oneLevelChildElement.appendChild(doc.createTextNode(url));
 			rootElement.appendChild(oneLevelChildElement);
 			
 			// RootElement의 자식노드로 ScraperTable 정보 저장

@@ -95,9 +95,6 @@ public class NodeDataExtractionProcesser {
 			if (isFullTrue(table)) {
 				// 테이블 행의 check변수를 모두 false로 변경
 				setFalseCheckInTableRows(table);
-				// url 노드 생성 후 저장
-				xmlNodes.add(new XmlNode("Url", currNode
-						.getUrl()));
 				// xmlNodes를 추가
 				xmlNodesList.add(xmlNodes);
 				// 새로 객체 생성

@@ -123,8 +123,7 @@ public class JTreeProcesser {
 					UserMutableTreeNode childNode = new UserMutableTreeNode(
 							childElement.tagName(), childElement.text(),
 							childElement.cssSelector(),
-							childElement.attr("abs:href"),
-							childElement.baseUri());
+							childElement.attr("abs:href"));
 
 					// 부모노드에 자식노드 추가
 					parentNode.add(childNode);

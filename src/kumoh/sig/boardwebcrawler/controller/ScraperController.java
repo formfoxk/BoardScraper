@@ -173,9 +173,9 @@ public class ScraperController {
 	* @param table
 	* @param nameAndAuthor 
 	*/
-	public void importXmlFileOfScraperTable(File file, JTable table, String[] nameAndAuthor){
+	public void importXmlFileOfScraperTable(File file, JTable table, String[] subContent){
 		XmlFileProcessor xfp = new XmlFileProcessor();
-		xfp.importXmlFileOfScraperTable(file, table, nameAndAuthor);
+		xfp.importXmlFileOfScraperTable(file, table, subContent);
 	}
 	
 	/** 
@@ -187,9 +187,9 @@ public class ScraperController {
 	* @param tableName
 	* @param author 
 	*/
-	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author){
+	public void exportXmlFileOfScraperTable(String path, JTable table, String tableName, String author, String url){
 		XmlFileProcessor xfp = new XmlFileProcessor();
-		xfp.exportXmlFileOfScraperTable(path, table, tableName, author);
+		xfp.exportXmlFileOfScraperTable(path, table, tableName, author, url);
 	}
 	
 	/** 

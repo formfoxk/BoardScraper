@@ -49,6 +49,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 	// 패널에 추가할 멤버 컴포넌트들
 	private JTextField tfNameOfScraper;
 	private JTextField tfAuthor;
+	private JTextField tfUrl;
 	private JTable table;
 	private JScrollPane jsp;
 	private JButton btnNew;
@@ -82,6 +83,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 		// TextField 생성
 		tfNameOfScraper = new JTextField(10);
 		tfAuthor = new JTextField(10);
+		tfUrl = new JTextField(10);
 		// Button 생성
 		btnNew = new JButton("New");
 		btnDelete = new JButton("Delete");
@@ -117,10 +119,14 @@ public class SouthPanel extends JPanel implements ActionListener {
 		JPanel panelLabelright = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		JLabel lbNameOfScraperView = new JLabel("NameOfScraper : ");
 		JLabel lbAuthorView = new JLabel("Author :");
+		JLabel lbUrlView = new JLabel("Url :");
 		panelLabelLeft.add(lbNameOfScraperView);
 		panelLabelLeft.add(tfNameOfScraper);
 		panelLabelLeft.add(lbAuthorView);
 		panelLabelLeft.add(tfAuthor);
+		panelLabelLeft.add(lbUrlView);
+		panelLabelLeft.add(tfUrl);
+		tfUrl.setText("null");
 		panelLabel.add("West", panelLabelLeft);
 		panelLabel.add("East", panelLabelright);
 
@@ -297,7 +303,6 @@ public class SouthPanel extends JPanel implements ActionListener {
 	*/
 	private void executeBtnImport(){
 		
-				
 		JFileChooser fileChooser = new JFileChooser();
         
 		// 모든 파일을 접근 하지 못하도록 설정
@@ -319,14 +324,15 @@ public class SouthPanel extends JPanel implements ActionListener {
             //선택한 파일의 경로 반환
             File selectedFile = fileChooser.getSelectedFile();
              
-            String[] nameAndAuthor = new String[2];
+            String[] subInfo = new String[3];
             
             ScraperController sc = ScraperController.getInstance();
-			sc.importXmlFileOfScraperTable(selectedFile, table, nameAndAuthor);
+			sc.importXmlFileOfScraperTable(selectedFile, table, subInfo);
 			
 			// 텍스트 필드 설정
-			tfNameOfScraper.setText(nameAndAuthor[0]);
-			tfAuthor.setText(nameAndAuthor[1]);
+			tfNameOfScraper.setText(subInfo[0]);
+			tfAuthor.setText(subInfo[1]);
+			tfUrl.setText(subInfo[2]);
         }
 	}
 	
@@ -339,9 +345,10 @@ public class SouthPanel extends JPanel implements ActionListener {
 		// 파일명과 파일생성자명 
 		String tableName = tfNameOfScraper.getText();
 		String author = tfAuthor.getText();
+		String url = tfUrl.getText();
 		
-		if(tableName.isEmpty() || author.isEmpty())
-			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author의 값이 입력 되지 않았습니다.", "ERROR",
+		if(tableName.isEmpty() || author.isEmpty() || url.isEmpty())
+			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author 또는 url의 값이 입력 되지 않았습니다.", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		else{
 			JFileChooser fileChooser = new JFileChooser();
@@ -372,7 +379,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 
 				ScraperController sc = ScraperController.getInstance();
 				sc.exportXmlFileOfScraperTable(savePath, table, tableName,
-						author);
+						author, url);
 
 				JOptionPane.showMessageDialog(null, "경로(" + savePath
 						+ ")에 저장되었습니다.");
