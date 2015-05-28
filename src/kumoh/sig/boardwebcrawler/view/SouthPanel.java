@@ -344,7 +344,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author의 값이 입력 되지 않았습니다.", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		else{
-		JFileChooser fileChooser = new JFileChooser();
+			JFileChooser fileChooser = new JFileChooser();
 
 			// 모든 파일을 접근 하지 못하도록 설정
 			fileChooser.setAcceptAllFileFilterUsed(false);
@@ -391,8 +391,45 @@ public class SouthPanel extends JPanel implements ActionListener {
 		List<LinkedList<XmlNode>> xmlNodesList = sc.NodeDataExtractionExecute(tree, table);
 		
 		if(xmlNodesList == null)
-			System.out.println("NULL");
+			JOptionPane.showMessageDialog(null, "저장할 값이 없습니다.", "ERROR",
+					JOptionPane.ERROR_MESSAGE);
 		else{
+			JFileChooser fileChooser = new JFileChooser();
+
+			// 모든 파일을 접근 하지 못하도록 설정
+			fileChooser.setAcceptAllFileFilterUsed(false);
+
+			// 기본 Path의 경로 설정 (바탕화면)
+			fileChooser.setCurrentDirectory(new File(System
+					.getProperty("user.home") + "//" + "Desktop"));
+
+			// 파일명 지정
+			fileChooser.setSelectedFile(new File("result.xml"));
+
+			// 필터링될 확장자
+			FileNameExtensionFilter filter = new FileNameExtensionFilter(
+					"xml 파일", "xml");
+
+			// 필터링될 확장자 추가
+			fileChooser.addChoosableFileFilter(filter);
+
+			// 파일오픈 다이얼로그 를 띄움
+			int result = fileChooser.showSaveDialog(this);
+
+			if (result == JFileChooser.APPROVE_OPTION) {
+				// 선택한 파일의 경로 반환
+				String savePath = fileChooser.getSelectedFile().toString();
+
+				sc.exportResultAsXmlFile(savePath, xmlNodesList);
+
+				JOptionPane.showMessageDialog(null, "경로(" + savePath
+						+ ")에 저장되었습니다.");
+			}
+			else{
+				JOptionPane.showMessageDialog(null, "실행을 취소 하였습니다.");
+			}
+			
+			/*
 			for(LinkedList<XmlNode> xmlNodes : xmlNodesList){
 				System.out.println("---Node---");
 				for(XmlNode xmlNode : xmlNodes){
@@ -400,6 +437,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 				}
 				System.out.println();
 			}
+			*/
 		}
 	}
 	

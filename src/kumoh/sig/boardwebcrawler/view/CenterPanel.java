@@ -163,7 +163,7 @@ public class CenterPanel extends JPanel implements
 		// Tree Panel 설정 
 		JScrollPane jspTree = null;
 
-		UserMutableTreeNode rootNode = new UserMutableTreeNode("NULL","","","");
+		UserMutableTreeNode rootNode = new UserMutableTreeNode("NULL","","","","");
 		tree = new JTree(rootNode);
 		jspTree = new JScrollPane(tree);
 		jspTree.setAutoscrolls(true);

@@ -330,7 +330,7 @@ public class HtmlDocumetParser {
 			urlList.add(node.getHref());
 		
 		// List 변환
-		List<String> result = new LinkedList<String>(new HashSet<String>(urlList));
+		List<String> result = new LinkedList<String>(urlList);
 		return result;
 	}
 	

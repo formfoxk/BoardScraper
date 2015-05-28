@@ -1,6 +1,7 @@
 package kumoh.sig.boardwebcrawler.model.logic;
 
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -50,8 +51,8 @@ public class NodeDataExtractionProcesser {
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		UserMutableTreeNode root = (UserMutableTreeNode) model.getRoot();
 
-		// xml파일에 저장될 모든 List
-		List<LinkedList<XmlNode>> xmlNodesList = new LinkedList<LinkedList<XmlNode>>();
+		// xml파일에 저장될 모든 HashSet
+		HashSet<LinkedList<XmlNode>> xmlNodesList = new HashSet<LinkedList<XmlNode>>();
 		// table값에 row값들이 저장되는 xmlNode들
 		LinkedList<XmlNode> xmlNodes = new LinkedList<XmlNode>();
 
@@ -94,6 +95,9 @@ public class NodeDataExtractionProcesser {
 			if (isFullTrue(table)) {
 				// 테이블 행의 check변수를 모두 false로 변경
 				setFalseCheckInTableRows(table);
+				// url 노드 생성 후 저장
+				xmlNodes.add(new XmlNode("Url", currNode
+						.getUrl()));
 				// xmlNodes를 추가
 				xmlNodesList.add(xmlNodes);
 				// 새로 객체 생성
@@ -103,7 +107,10 @@ public class NodeDataExtractionProcesser {
 		if (xmlNodesList.isEmpty())
 			return null;
 
-		return xmlNodesList;
+		// HashSet을 LinkedList로 변환
+		List<LinkedList<XmlNode>> temp = new LinkedList<LinkedList<XmlNode>>(xmlNodesList);
+		
+		return temp;
 	}
 
 	/** 
@@ -130,6 +137,7 @@ public class NodeDataExtractionProcesser {
 				String description = null, cssSelector = null;
 				description = (String) dtm.getValueAt(i, 1);
 				cssSelector = (String) dtm.getValueAt(i, 2);
+				
 				
 				// null check
 				if (description == null || cssSelector == null)

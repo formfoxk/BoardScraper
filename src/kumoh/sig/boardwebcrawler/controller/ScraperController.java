@@ -193,6 +193,18 @@ public class ScraperController {
 	}
 	
 	/** 
+	* @Method Name	: exportResultAsXmlFile 
+	* @Method 설명    	: 최종 결과를 Xml파일로 출력한다.
+	* @변경이력      	:
+	* @param path
+	* @param xmlNodesList 
+	*/
+	public void exportResultAsXmlFile(String path, List<LinkedList<XmlNode>> xmlNodesList){
+		XmlFileProcessor xfp = new XmlFileProcessor();
+		xfp.exportResultAsXmlFile(path, xmlNodesList);
+	}
+	
+	/** 
 	* @Method Name	: NodeDataExtractionExecute 
 	* @Method 설명    	: 트리와 테이블의 값을 비교하여 데이터를 추출 하는 함수
 	* @변경이력      	:

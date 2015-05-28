@@ -1,6 +1,8 @@
 package kumoh.sig.boardwebcrawler.model.logic;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JTable;
@@ -13,6 +15,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import kumoh.sig.boardwebcrawler.model.data.XmlNode;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -188,4 +192,58 @@ public class XmlFileProcessor {
 		}
 	}
 	
+	/** 
+	* @Method Name	: exportResultAsXmlFile 
+	* @Method 설명    	: 최종 결과를 Xml파일로 출력한다.
+	* @변경이력      	:
+	* @param path
+	* @param xmlNodesList 
+	*/
+	public void exportResultAsXmlFile(String path, List<LinkedList<XmlNode>> xmlNodesList){
+		try {
+			// Document를 얻는다.
+			DocumentBuilderFactory docFactory = DocumentBuilderFactory
+					.newInstance();
+			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+			Document doc = docBuilder.newDocument();
+			
+			Element rootElement = null;
+			Element oneLevelChildElement = null;
+			Element twoLevelChildElement = null;
+			
+			// Root
+			rootElement = doc.createElement("documents");
+			doc.appendChild(rootElement);
+			
+			// RootElement의 자식노드로 ScraperTable 정보 저장
+			
+			
+			for (LinkedList<XmlNode> xmlNodes : xmlNodesList) {				
+				// LEVEL1의 노드로 row Element 생성
+				oneLevelChildElement = doc.createElement("document");
+				rootElement.appendChild(oneLevelChildElement);
+				
+				for(XmlNode node : xmlNodes){
+					//Tag Element
+					twoLevelChildElement = doc.createElement(node.getTag());
+					twoLevelChildElement.appendChild(doc.createTextNode(node.getContent()));
+					oneLevelChildElement.appendChild(twoLevelChildElement);
+				}
+			}
+			
+			// 내용을 XML파일로 변환
+			TransformerFactory transformerFactory = TransformerFactory
+					.newInstance();
+			Transformer transformer = transformerFactory.newTransformer();
+			DOMSource source = new DOMSource(doc);
+			StreamResult result = new StreamResult(
+					new File(path));
+			transformer.transform(source, result);
+			
+		} catch (ParserConfigurationException pce) {
+			pce.printStackTrace();
+		} catch (TransformerException tfe) {
+			tfe.printStackTrace();
+		}
+	}
 }
