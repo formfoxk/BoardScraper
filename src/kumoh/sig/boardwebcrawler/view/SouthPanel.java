@@ -126,7 +126,6 @@ public class SouthPanel extends JPanel implements ActionListener {
 		panelLabelLeft.add(tfAuthor);
 		panelLabelLeft.add(lbUrlView);
 		panelLabelLeft.add(tfUrl);
-		tfUrl.setText("null");
 		panelLabel.add("West", panelLabelLeft);
 		panelLabel.add("East", panelLabelright);
 
@@ -303,6 +302,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 	*/
 	private void executeBtnImport(){
 		
+				
 		JFileChooser fileChooser = new JFileChooser();
         
 		// 모든 파일을 접근 하지 못하도록 설정
@@ -348,7 +348,7 @@ public class SouthPanel extends JPanel implements ActionListener {
 		String url = tfUrl.getText();
 		
 		if(tableName.isEmpty() || author.isEmpty() || url.isEmpty())
-			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author 또는 url의 값이 입력 되지 않았습니다.", "ERROR",
+			JOptionPane.showMessageDialog(null, "NameOfScraper 또는 Author의 값이 입력 되지 않았습니다.", "ERROR",
 					JOptionPane.ERROR_MESSAGE);
 		else{
 			JFileChooser fileChooser = new JFileChooser();

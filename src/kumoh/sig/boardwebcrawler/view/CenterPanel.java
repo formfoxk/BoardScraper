@@ -10,6 +10,7 @@ import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -40,7 +41,6 @@ import javax.swing.tree.TreePath;
 
 import kumoh.sig.boardwebcrawler.controller.ScraperController;
 import kumoh.sig.boardwebcrawler.model.data.UserMutableTreeNode;
-import kumoh.sig.boardwebcrawler.model.logic.JTreeProcesser;
 
 import org.jsoup.nodes.Element;
 
@@ -75,6 +75,9 @@ public class CenterPanel extends JPanel implements
 	
 	// 트리
 	private static JTree tree = null;
+	
+	// WaitDialog
+	private WaitDialog waitDialog;
 	
 	// 생성자
 	public CenterPanel(JFrame frame) {
@@ -216,6 +219,30 @@ public class CenterPanel extends JPanel implements
 		
 
 	}
+	
+	/** 
+	* @Method Name	: createWaitDialog 
+	* @Method 설명    	: WaitDialog를 생성한다(모달리스);
+	* @변경이력      	: 
+	*/
+	public void createWaitDialog(){
+    	waitDialog = new WaitDialog(frame);
+    	
+    	waitDialog.setTitle("Alert");
+        
+        // 다이얼로그의 크기를 구한다.
+        Dimension waitDialogSize = waitDialog.getSize();
+        
+        // 화면의 크기를 구한다.
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        waitDialog.setLocation((screenSize.width - waitDialogSize.width)/2, (screenSize.height - waitDialogSize.height)/2);
+        
+        //디폴트는 모달리스이다.
+        waitDialog.setModal(false);    //모달리스
+        //this.td.setModal(true);   //모달
+        waitDialog.setVisible(true);
+    }
 
 /**************************************************************************************/
 /**										이벤트 처리		     				    	     **/
@@ -272,7 +299,14 @@ public class CenterPanel extends JPanel implements
 	public void actionPerformed(ActionEvent e) {
 		// Search 버튼을 클릭 한 경우
 		if (e.getSource() == btnUrl) {
+			// Wait 다이얼로그 생성
+			createWaitDialog();
+			
 			executeBtnUrl();
+			
+			// Wait 다이얼로그 삭제
+			waitDialog.dispose();
+			
 		}
 		
 		// Find 버튼을 클릭 한 경우
@@ -379,13 +413,23 @@ public class CenterPanel extends JPanel implements
 					
 					boolean isExistHref = (!href.isEmpty());
 					ScraperController sc = ScraperController.getInstance();
+					
+					// WaitDialog를 생성
+					createWaitDialog();
 					// href 또는 OnClick함수가 존재하는 경우
 					if(isExistHref || sc.isExistOnClick(url, cssSelector)){
+						// WaitDialog를 삭제
+						waitDialog.dispose();
+						
 						SelectToParsingDialog dialog = new SelectToParsingDialog(frame);
 						dialog.display();
 						
 						// dialog의 Ok버튼이 클릭된 경우
 						if(dialog.getIsCheckBtnOk()){
+							
+							// WaitDialog를 생성
+							createWaitDialog();
+							
 							// 형제 노드 생성가 TRUE인 경우
 							if(dialog.getIsCheckSibling()){
 								// URL들을 파싱하여 Tree를 재구성한다.
@@ -395,10 +439,16 @@ public class CenterPanel extends JPanel implements
 								// 하나의 URL을 파싱하여 Tree를 재구성한다.
 								singleNewBuildTree(isExistHref, currNode);
 							}
+							
+							// WaitDialog를 삭제
+							waitDialog.dispose();
 						}
 					}
 					// href 또는 OnClick함수가 존재하지 않는 경우
 					else{
+						// WaitDialog를 삭제
+						waitDialog.dispose();
+						
 						// 오류 메시지 박스 출력
 						JOptionPane.showMessageDialog(null, "우클릭된 노드는 문서를 파싱 할 수 없습니다.", "ERROR",
 								JOptionPane.ERROR_MESSAGE);
